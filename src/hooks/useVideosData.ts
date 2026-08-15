@@ -21,7 +21,7 @@ export function useVideosData() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Sync with Supabase if configured
+  // Fetch all videos from Supabase
   const fetchVideos = useCallback(async () => {
     if (!isSupabaseConfigured || !supabase) return;
 
@@ -43,7 +43,7 @@ export function useVideosData() {
           externalLink: row.external_link,
           thumbnailUrl: row.thumbnail_url,
           category: row.category as Category,
-          accentColor: row.accent_color,
+          accentColor: row.accent_color || '#ef4444',
         }));
         setVideos(mapped);
         localStorage.setItem(LOCAL_STORAGE_VIDEOS_KEY, JSON.stringify(mapped));
@@ -55,11 +55,33 @@ export function useVideosData() {
     }
   }, []);
 
+  // Initial fetch and Supabase Realtime subscription
   useEffect(() => {
     fetchVideos();
+
+    // Subscribe to real-time changes from Supabase `videos` table
+    if (isSupabaseConfigured && supabase) {
+      const channel = supabase
+        .channel('public:videos')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'videos' },
+          (payload) => {
+            console.log('Supabase real-time update received:', payload);
+            fetchVideos();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        if (supabase) {
+          supabase.removeChannel(channel);
+        }
+      };
+    }
   }, [fetchVideos]);
 
-  // Persist locally
+  // Persist locally for instant offline cache
   const persistVideos = (newVideos: Video[]) => {
     setVideos(newVideos);
     try {
@@ -69,7 +91,7 @@ export function useVideosData() {
     }
   };
 
-  // Update existing video
+  // Update existing video directly in Supabase
   const updateVideo = async (updated: Video): Promise<boolean> => {
     setError(null);
     try {
@@ -82,12 +104,12 @@ export function useVideosData() {
             thumbnail_url: updated.thumbnailUrl,
             category: updated.category,
             order_index: updated.orderIndex,
-            accent_color: updated.accentColor,
+            accent_color: updated.accentColor || '#ef4444',
           })
           .eq('id', updated.id);
 
         if (dbError) {
-          console.warn('Supabase update warning:', dbError.message);
+          throw new Error(`Supabase update error: ${dbError.message}`);
         }
       }
 
@@ -95,12 +117,14 @@ export function useVideosData() {
       persistVideos(updatedList);
       return true;
     } catch (err) {
-      setError((err as Error).message || 'Failed to update video');
+      const msg = (err as Error).message || 'Failed to update video';
+      setError(msg);
+      console.error('Update video error:', err);
       return false;
     }
   };
 
-  // Delete video
+  // Delete video directly from Supabase
   const deleteVideo = async (id: string): Promise<boolean> => {
     setError(null);
     try {
@@ -111,7 +135,7 @@ export function useVideosData() {
           .eq('id', id);
 
         if (dbError) {
-          console.warn('Supabase delete warning:', dbError.message);
+          throw new Error(`Supabase delete error: ${dbError.message}`);
         }
       }
 
@@ -119,12 +143,14 @@ export function useVideosData() {
       persistVideos(updatedList);
       return true;
     } catch (err) {
-      setError((err as Error).message || 'Failed to delete video');
+      const msg = (err as Error).message || 'Failed to delete video';
+      setError(msg);
+      console.error('Delete video error:', err);
       return false;
     }
   };
 
-  // Add new video
+  // Add new video directly into Supabase
   const addVideo = async (newVideo: Omit<Video, 'id'>): Promise<boolean> => {
     setError(null);
     try {
@@ -132,6 +158,7 @@ export function useVideosData() {
       const videoEntry: Video = {
         ...newVideo,
         id: newId,
+        accentColor: newVideo.accentColor || '#ef4444',
       };
 
       if (isSupabaseConfigured && supabase) {
@@ -146,7 +173,7 @@ export function useVideosData() {
         });
 
         if (dbError) {
-          console.warn('Supabase insert warning:', dbError.message);
+          throw new Error(`Supabase insert error: ${dbError.message}`);
         }
       }
 
@@ -154,12 +181,14 @@ export function useVideosData() {
       persistVideos(updatedList);
       return true;
     } catch (err) {
-      setError((err as Error).message || 'Failed to add video');
+      const msg = (err as Error).message || 'Failed to add video';
+      setError(msg);
+      console.error('Add video error:', err);
       return false;
     }
   };
 
-  // Reorder videos
+  // Reorder videos directly in Supabase
   const reorderVideos = async (reordered: Video[]): Promise<boolean> => {
     const updatedWithIndices = reordered.map((v, idx) => ({
       ...v,
@@ -171,13 +200,17 @@ export function useVideosData() {
     if (isSupabaseConfigured && supabase) {
       try {
         for (const item of updatedWithIndices) {
-          await supabase
+          const { error: reorderErr } = await supabase
             .from('videos')
             .update({ order_index: item.orderIndex })
             .eq('id', item.id);
+            
+          if (reorderErr) {
+            console.warn('Supabase reorder sync warning:', reorderErr.message);
+          }
         }
       } catch (err) {
-        console.warn('Supabase reorder sync warning:', err);
+        console.warn('Supabase reorder sync error:', err);
       }
     }
     return true;
