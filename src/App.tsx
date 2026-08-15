@@ -185,8 +185,8 @@ export function App() {
 
   // --- Public Single Playlist View ---
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0f19] text-[#e2e8f0]">
-      {/* Sticky Header with Navigation and Controls */}
+    <div className="min-h-screen flex flex-col bg-[#08080a] text-zinc-200 font-sans">
+      {/* Sticky Header with Brand Logo and Controls (No Category Chips in Header) */}
       <PlaylistHeader
         totalItems={videos.length}
         filteredItemsCount={processedVideos.length}
@@ -194,7 +194,6 @@ export function App() {
         favoritesOnly={favoritesOnly}
         onToggleFavoritesOnly={() => setFavoritesOnly((prev) => !prev)}
         selectedCategory={selectedCategory}
-        onSelectCategory={handleJumpToCategory}
         currentSort={currentSort}
         onSelectSort={setCurrentSort}
         onShuffle={handleShuffle}
@@ -224,19 +223,19 @@ export function App() {
         {isFilteredGridView ? (
           <div>
             {/* Filter Header Context Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-[#1e293b]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-[#27272a]">
               <div>
-                <h2 className="font-sans font-bold text-xl text-slate-100">
+                <h2 className="font-sans font-bold text-xl text-white">
                   {searchQuery ? `Search results for "${searchQuery}"` : selectedCategory !== 'All' ? selectedCategory : 'Filtered playlist'}
                 </h2>
-                <p className="text-xs font-mono text-slate-400 mt-0.5">
-                  Showing {processedVideos.length} of {videos.length} videos
+                <p className="text-xs font-mono text-zinc-400 mt-0.5">
+                  Showing <span className="text-red-400 font-bold">{processedVideos.length}</span> of {videos.length} videos
                 </p>
               </div>
 
               <button
                 onClick={handleClearAllFilters}
-                className="px-3.5 py-1.5 rounded-xl bg-[#131d33] hover:bg-[#1e293b] text-slate-300 font-mono text-xs border border-[#1e293b] transition-colors self-start sm:self-auto cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl bg-[#141418] hover:bg-[#1f1f26] text-zinc-300 hover:text-white font-mono text-xs border border-[#27272a] hover:border-red-500/40 transition-colors self-start sm:self-auto cursor-pointer"
               >
                 Reset to all categories
               </button>
@@ -258,38 +257,38 @@ export function App() {
             ) : (
               /* Empty Search / Filter State */
               <div className="max-w-md mx-auto py-16 px-4 text-center">
-                <div className="w-12 h-12 rounded-2xl bg-[#131d33] border border-[#1e293b] flex items-center justify-center mx-auto mb-4 text-slate-400 font-mono text-sm shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-[#141418] border border-[#27272a] flex items-center justify-center mx-auto mb-4 text-red-500 font-mono text-base shadow-sm">
                   {favoritesOnly ? '♥' : '00'}
                 </div>
                 
                 {favoritesOnly && favoritesCount === 0 ? (
                   <>
-                    <h2 className="font-sans font-semibold text-lg text-slate-200">
+                    <h2 className="font-sans font-semibold text-lg text-white">
                       No favorite videos saved yet
                     </h2>
-                    <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                    <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
                       Click the heart icon on any card to save it to your local browser favorites list.
                     </p>
                     <button
                       onClick={() => setFavoritesOnly(false)}
-                      className="mt-5 px-4 py-2 rounded-xl bg-[#131d33] hover:bg-[#1e293b] text-slate-200 border border-[#1e293b] font-mono text-xs font-medium transition-colors cursor-pointer shadow-xs"
+                      className="mt-5 px-4 py-2 rounded-xl bg-[#141418] hover:bg-[#1f1f26] text-white border border-[#27272a] hover:border-red-500/40 font-mono text-xs font-medium transition-colors cursor-pointer shadow-xs"
                     >
                       Show all videos
                     </button>
                   </>
                 ) : (
                   <>
-                    <h2 className="font-sans font-semibold text-lg text-slate-200">
+                    <h2 className="font-sans font-semibold text-lg text-white">
                       No matching videos in this playlist
                     </h2>
-                    <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                    <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
                       {searchQuery
                         ? `No tracks match "${searchQuery}".`
                         : `No tracks found with the current filter settings.`}
                     </p>
                     <button
                       onClick={handleClearAllFilters}
-                      className="mt-5 px-4 py-2 rounded-xl bg-[#131d33] hover:bg-[#1e293b] text-slate-200 border border-[#1e293b] font-mono text-xs font-medium transition-colors cursor-pointer shadow-xs"
+                      className="mt-5 px-4 py-2 rounded-xl bg-[#141418] hover:bg-[#1f1f26] text-white border border-[#27272a] hover:border-red-500/40 font-mono text-xs font-medium transition-colors cursor-pointer shadow-xs"
                     >
                       Reset filters
                     </button>

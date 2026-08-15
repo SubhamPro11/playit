@@ -35,10 +35,10 @@ export const CategoryJumpBar: React.FC<CategoryJumpBarProps> = ({
   }, [realCategories]);
 
   return (
-    <div className="sticky top-[57px] z-20 bg-[#070a12]/90 backdrop-blur-md border-b border-[#1e293b] py-2.5 px-4 sm:px-6 lg:px-8">
+    <div className="sticky top-[61px] z-20 bg-[#08080a]/95 backdrop-blur-md border-b border-[#26262a] py-2.5 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
         <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none max-w-full">
-          <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider mr-1.5 shrink-0 hidden sm:inline">
+          <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mr-1.5 shrink-0 hidden sm:inline">
             Channels:
           </span>
           {realCategories.map((cat) => {
@@ -49,10 +49,10 @@ export const CategoryJumpBar: React.FC<CategoryJumpBarProps> = ({
               <button
                 key={cat}
                 onClick={() => onJumpToCategory(cat)}
-                className={`whitespace-nowrap px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
+                className={`whitespace-nowrap px-3.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-lime-400 text-black font-semibold shadow-xs scale-105'
-                    : 'bg-[#131d33] text-slate-300 hover:bg-[#1e293b] hover:text-white border border-[#1e293b]'
+                    ? 'bg-red-600 text-white font-semibold shadow-md shadow-red-950/40 scale-105 ring-1 ring-red-400/50'
+                    : 'bg-[#141418] text-zinc-300 hover:bg-[#1f1f26] hover:text-white border border-[#27272a]'
                 }`}
               >
                 {cat}
