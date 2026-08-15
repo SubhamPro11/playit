@@ -173,6 +173,7 @@ export function App() {
     return (
       <AdminDashboard
         videos={videos}
+        isSupabaseConfigured={isSupabaseConfigured}
         onUpdateVideo={updateVideo}
         onDeleteVideo={deleteVideo}
         onAddVideo={addVideo}

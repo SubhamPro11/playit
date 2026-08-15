@@ -77,6 +77,8 @@ export const AddVideoModal: React.FC<AddVideoModalProps> = ({
     setLoading(false);
     if (success) {
       onClose();
+    } else {
+      setError('Failed to add entry to database. Please check Supabase connection.');
     }
   };
 

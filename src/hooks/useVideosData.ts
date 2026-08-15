@@ -34,7 +34,8 @@ export function useVideosData() {
         .order('order_index', { ascending: true });
 
       if (fetchErr) {
-        console.warn('Supabase fetch error, using local data fallback:', fetchErr.message);
+        console.warn('Supabase fetch error:', fetchErr.message);
+        setError(`Supabase query warning: ${fetchErr.message}`);
       } else if (data && data.length > 0) {
         const mapped: Video[] = data.map((row) => ({
           id: row.id,
@@ -46,7 +47,33 @@ export function useVideosData() {
           accentColor: row.accent_color || '#ef4444',
         }));
         setVideos(mapped);
-        localStorage.setItem(LOCAL_STORAGE_VIDEOS_KEY, JSON.stringify(mapped));
+        try {
+          localStorage.setItem(LOCAL_STORAGE_VIDEOS_KEY, JSON.stringify(mapped));
+        } catch {
+          // ignore
+        }
+      } else if (data && data.length === 0) {
+        // Auto-seed initial 70 playlist records to Supabase if the table is currently empty
+        console.info('Supabase videos table is empty. Auto-seeding initial playlist...');
+        const seedPayload = PLAYLIST.videos.map((v) => ({
+          id: v.id,
+          title: v.title,
+          external_link: v.externalLink,
+          thumbnail_url: v.thumbnailUrl,
+          category: v.category,
+          order_index: v.orderIndex,
+          accent_color: v.accentColor || '#ef4444',
+        }));
+
+        const { error: seedErr } = await supabase.from('videos').upsert(seedPayload, {
+          onConflict: 'id',
+        });
+
+        if (seedErr) {
+          console.warn('Auto-seed warning:', seedErr.message);
+        } else {
+          console.info('Successfully auto-seeded 70 items to Supabase.');
+        }
       }
     } catch (err) {
       console.warn('Error fetching from Supabase:', err);
@@ -91,25 +118,29 @@ export function useVideosData() {
     }
   };
 
-  // Update existing video directly in Supabase
+  // Update existing video directly in Supabase using UPSERT
   const updateVideo = async (updated: Video): Promise<boolean> => {
     setError(null);
     try {
       if (isSupabaseConfigured && supabase) {
         const { error: dbError } = await supabase
           .from('videos')
-          .update({
-            title: updated.title,
-            external_link: updated.externalLink,
-            thumbnail_url: updated.thumbnailUrl,
-            category: updated.category,
-            order_index: updated.orderIndex,
-            accent_color: updated.accentColor || '#ef4444',
-          })
-          .eq('id', updated.id);
+          .upsert(
+            {
+              id: updated.id,
+              title: updated.title,
+              external_link: updated.externalLink,
+              thumbnail_url: updated.thumbnailUrl,
+              category: updated.category,
+              order_index: updated.orderIndex,
+              accent_color: updated.accentColor || '#ef4444',
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'id' }
+          );
 
         if (dbError) {
-          throw new Error(`Supabase update error: ${dbError.message}`);
+          throw new Error(`Supabase error: ${dbError.message}`);
         }
       }
 
@@ -117,7 +148,7 @@ export function useVideosData() {
       persistVideos(updatedList);
       return true;
     } catch (err) {
-      const msg = (err as Error).message || 'Failed to update video';
+      const msg = (err as Error).message || 'Failed to update video in database';
       setError(msg);
       console.error('Update video error:', err);
       return false;
@@ -199,15 +230,22 @@ export function useVideosData() {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        for (const item of updatedWithIndices) {
-          const { error: reorderErr } = await supabase
-            .from('videos')
-            .update({ order_index: item.orderIndex })
-            .eq('id', item.id);
-            
-          if (reorderErr) {
-            console.warn('Supabase reorder sync warning:', reorderErr.message);
-          }
+        const updates = updatedWithIndices.map((item) => ({
+          id: item.id,
+          title: item.title,
+          external_link: item.externalLink,
+          thumbnail_url: item.thumbnailUrl,
+          category: item.category,
+          order_index: item.orderIndex,
+          accent_color: item.accentColor || '#ef4444',
+        }));
+
+        const { error: reorderErr } = await supabase.from('videos').upsert(updates, {
+          onConflict: 'id',
+        });
+
+        if (reorderErr) {
+          console.warn('Supabase reorder sync warning:', reorderErr.message);
         }
       } catch (err) {
         console.warn('Supabase reorder sync error:', err);
@@ -220,6 +258,7 @@ export function useVideosData() {
     videos,
     loading,
     error,
+    isSupabaseConfigured,
     updateVideo,
     deleteVideo,
     addVideo,

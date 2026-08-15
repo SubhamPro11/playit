@@ -88,6 +88,8 @@ export const EditVideoModal: React.FC<EditVideoModalProps> = ({
     setLoading(false);
     if (success) {
       onClose();
+    } else {
+      setError('Failed to save changes to database. Please check Supabase connection.');
     }
   };
 

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, LogOut, ExternalLink, Search } from 'lucide-react';
+import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, LogOut, ExternalLink, Search, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { Video } from '../../types/video';
 import { CATEGORIES, Category } from '../../data/playlist';
 import { EditVideoModal } from './EditVideoModal';
@@ -9,6 +9,7 @@ import { BrandLogo } from '../BrandLogo';
 
 interface AdminDashboardProps {
   videos: Video[];
+  isSupabaseConfigured: boolean;
   onUpdateVideo: (updated: Video) => Promise<boolean>;
   onDeleteVideo: (id: string) => Promise<boolean>;
   onAddVideo: (newVideo: Omit<Video, 'id'>) => Promise<boolean>;
@@ -19,6 +20,7 @@ interface AdminDashboardProps {
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   videos,
+  isSupabaseConfigured,
   onUpdateVideo,
   onDeleteVideo,
   onAddVideo,
@@ -28,11 +30,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
+  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
   // Modals state
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [deletingVideo, setDeletingVideo] = useState<Video | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
+
+  const showFeedback = (type: 'success' | 'error', text: string) => {
+    setStatusMessage({ type, text });
+    setTimeout(() => {
+      setStatusMessage((current) => (current?.text === text ? null : current));
+    }, 4000);
+  };
 
   const filteredVideos = useMemo(() => {
     return videos
@@ -54,7 +64,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const idxB = newVideos.findIndex((v) => v.id === prevVideo.id);
     if (idxA !== -1 && idxB !== -1) {
       [newVideos[idxA], newVideos[idxB]] = [newVideos[idxB], newVideos[idxA]];
-      await onReorderVideos(newVideos);
+      const ok = await onReorderVideos(newVideos);
+      if (ok) {
+        showFeedback('success', `Moved "${currentVideo.title}" up`);
+      } else {
+        showFeedback('error', 'Failed to reorder entries in database');
+      }
     }
   };
 
@@ -67,7 +82,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const idxB = newVideos.findIndex((v) => v.id === nextVideo.id);
     if (idxA !== -1 && idxB !== -1) {
       [newVideos[idxA], newVideos[idxB]] = [newVideos[idxB], newVideos[idxA]];
-      await onReorderVideos(newVideos);
+      const ok = await onReorderVideos(newVideos);
+      if (ok) {
+        showFeedback('success', `Moved "${currentVideo.title}" down`);
+      } else {
+        showFeedback('error', 'Failed to reorder entries in database');
+      }
     }
   };
 
@@ -109,6 +129,51 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
+        {/* Database Connection Status Banner */}
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border bg-[#111114]">
+          <div className="flex items-center gap-2.5">
+            {isSupabaseConfigured ? (
+              <>
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="font-mono text-xs text-emerald-400 font-semibold">
+                  Supabase Cloud Database Connected
+                </span>
+                <span className="text-[11px] font-mono text-zinc-500 hidden md:inline">
+                  (Changes persist permanently across all deployments)
+                </span>
+              </>
+            ) : (
+              <>
+                <AlertTriangle className="w-4 h-4 text-amber-400" />
+                <span className="font-mono text-xs text-amber-400 font-semibold">
+                  Local Sandbox Mode
+                </span>
+                <span className="text-[11px] font-mono text-zinc-400">
+                  (Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in deployment environment variables to persist in cloud)
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* Toast Notification */}
+          {statusMessage && (
+            <div
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono border animate-in fade-in duration-200 ${
+                statusMessage.type === 'success'
+                  ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                  : 'bg-red-500/10 text-red-300 border-red-500/30'
+              }`}
+            >
+              {statusMessage.type === 'success' ? (
+                <CheckCircle2 className="w-3.5 h-3.5" />
+              ) : (
+                <AlertTriangle className="w-3.5 h-3.5" />
+              )}
+              <span>{statusMessage.text}</span>
+            </div>
+          )}
+        </div>
+
         {/* Controls Bar */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-[#27272a]">
           
@@ -282,7 +347,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         isOpen={isAddOpen}
         nextOrderIndex={videos.length + 1}
         onClose={() => setIsAddOpen(false)}
-        onAdd={onAddVideo}
+        onAdd={async (newVideo) => {
+          const success = await onAddVideo(newVideo);
+          if (success) {
+            showFeedback('success', `Added "${newVideo.title}" to playlist`);
+          }
+          return success;
+        }}
       />
 
       <EditVideoModal
@@ -291,11 +362,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         onClose={() => setEditingVideo(null)}
         onSave={async (id, updates) => {
           if (!editingVideo) return false;
-          return await onUpdateVideo({
+          const success = await onUpdateVideo({
             ...editingVideo,
             ...updates,
             id,
           });
+          if (success) {
+            showFeedback('success', `Saved changes for "${updates.title || editingVideo.title}"`);
+          }
+          return success;
         }}
       />
 
@@ -303,7 +378,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         video={deletingVideo}
         isOpen={!!deletingVideo}
         onClose={() => setDeletingVideo(null)}
-        onConfirm={onDeleteVideo}
+        onConfirm={async (id) => {
+          const title = deletingVideo?.title || 'Entry';
+          const success = await onDeleteVideo(id);
+          if (success) {
+            showFeedback('success', `Deleted "${title}"`);
+          }
+          return success;
+        }}
       />
     </div>
   );
