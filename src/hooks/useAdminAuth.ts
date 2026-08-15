@@ -56,7 +56,7 @@ export function useAdminAuth() {
 
     const trimmed = usernameInput.trim().toLowerCase();
     // Resolve backing email for username
-    const email = trimmed.includes('@') ? trimmed : `${trimmed}@playlist.local`;
+    const email = trimmed.includes('@') ? trimmed : `${trimmed}@playlist.app`;
 
     if (isSupabaseConfigured && supabase) {
       try {

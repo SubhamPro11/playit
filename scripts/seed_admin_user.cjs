@@ -3,7 +3,9 @@
  * Run with: node scripts/seed_admin_user.cjs
  */
 const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
+if (process.loadEnvFile) {
+  try { process.loadEnvFile(); } catch (e) {}
+}
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
@@ -19,7 +21,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 async function seedAdminUser() {
-  const email = 'morbius@playlist.local';
+  const email = 'morbius@playlist.app';
   const password = process.env.ADMIN_INITIAL_PASSWORD || 'subhamkr11';
 
   console.log(`Ensuring admin user (${email}) exists in Supabase Auth...`);
