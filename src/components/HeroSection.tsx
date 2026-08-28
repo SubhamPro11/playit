@@ -132,6 +132,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <img
                   src={currentSpotlight.thumbnailUrl}
                   alt={currentSpotlight.title}
+                  width={640}
+                  height={360}
+                  loading="eager"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
                 />
 

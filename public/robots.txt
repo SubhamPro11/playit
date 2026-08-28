@@ -1,0 +1,8 @@
+# PlayIt robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+
+# Sitemap location
+Sitemap: https://playit.morbius.workers.dev/sitemap.xml

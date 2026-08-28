@@ -32,6 +32,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
   return (
     <a
+      id={`track-${video.id}`}
       href={video.externalLink}
       target="_blank"
       rel="noopener noreferrer"
@@ -43,7 +44,10 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           <img
             src={video.thumbnailUrl}
             alt={video.title}
+            width={640}
+            height={360}
             loading="lazy"
+            decoding="async"
             onError={() => setImageError(true)}
             className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300 ease-out"
           />

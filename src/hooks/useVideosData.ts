@@ -88,6 +88,11 @@ export function useVideosData() {
 
     // Subscribe to real-time changes from Supabase `videos` table
     if (isSupabaseConfigured && supabase) {
+      const existingChannel = supabase.getChannels().find((c) => c.topic === 'realtime:public:videos');
+      if (existingChannel) {
+        supabase.removeChannel(existingChannel);
+      }
+
       const channel = supabase
         .channel('public:videos')
         .on(
