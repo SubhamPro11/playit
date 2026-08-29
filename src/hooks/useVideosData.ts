@@ -44,7 +44,7 @@ export function useVideosData() {
           externalLink: row.external_link,
           thumbnailUrl: row.thumbnail_url,
           category: row.category as Category,
-          accentColor: row.accent_color || '#ef4444',
+          accentColor: row.accent_color || '#f59e0b',
         }));
         setVideos(mapped);
         try {
@@ -62,7 +62,7 @@ export function useVideosData() {
           thumbnail_url: v.thumbnailUrl,
           category: v.category,
           order_index: v.orderIndex,
-          accent_color: v.accentColor || '#ef4444',
+          accent_color: v.accentColor || '#f59e0b',
         }));
 
         const { error: seedErr } = await supabase.from('videos').upsert(seedPayload, {
@@ -242,7 +242,7 @@ export function useVideosData() {
           thumbnail_url: item.thumbnailUrl,
           category: item.category,
           order_index: item.orderIndex,
-          accent_color: item.accentColor || '#ef4444',
+          accent_color: item.accentColor || '#f59e0b',
         }));
 
         const { error: reorderErr } = await supabase.from('videos').upsert(updates, {

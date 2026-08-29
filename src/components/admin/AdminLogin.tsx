@@ -41,21 +41,21 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
   const displayedError = localError || error;
 
   return (
-    <div className="min-h-screen bg-[#08080a] flex flex-col justify-center items-center p-4 relative overflow-hidden font-sans">
-      {/* Subtle red glow in background */}
-      <div className="absolute top-1/3 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-surface-900 flex flex-col justify-center items-center p-4 relative overflow-hidden font-sans">
+      {/* Subtle warm amber glow in background */}
+      <div className="absolute top-1/3 w-96 h-96 bg-accent-500/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Top back action */}
       <button
         onClick={onBackToPublic}
-        className="absolute top-6 left-6 inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white transition-colors cursor-pointer"
+        className="absolute top-6 left-6 inline-flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Return to showcase</span>
       </button>
 
       {/* Card Container */}
-      <div className="w-full max-w-md bg-[#111114] border border-[#27272a] rounded-2xl p-6 sm:p-8 shadow-2xl relative z-10">
+      <div className="w-full max-w-md bg-surface-850 border border-surface-700 rounded-xl p-6 sm:p-8 shadow-xl relative z-10">
         
         {/* Header with Logo */}
         <div className="flex flex-col items-center text-center mb-6">
@@ -63,42 +63,42 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
           <h2 className="mt-4 font-sans font-bold text-lg text-white">
             Admin console
           </h2>
-          <p className="font-mono text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-slate-400 mt-1">
             Gated management console
           </p>
         </div>
 
         {!isSupabaseConfigured && (
-          <div className="mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-2.5 text-amber-300 text-xs">
+          <div className="mb-4 p-3 rounded-xl bg-accent-500/10 border border-accent-500/30 flex items-start gap-2.5 text-accent-300 text-xs">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <p className="font-mono leading-relaxed">
+            <p className="leading-relaxed">
               Supabase credentials not detected in .env. Falling back to local admin verification.
             </p>
           </div>
         )}
 
         {displayedError && (
-          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono">
+          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
             {displayedError}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-mono text-zinc-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs text-slate-300 font-medium uppercase tracking-wider mb-1.5">
               Username
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-[#0a0a0d] text-white rounded-xl border border-[#27272a] focus:border-red-500 focus:outline-none font-mono text-xs transition-colors"
+              className="w-full px-3.5 py-2.5 bg-surface-900 text-white rounded-xl border border-surface-700 focus:border-accent-500 focus:outline-none text-xs transition-colors"
               placeholder="Username"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-mono text-zinc-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs text-slate-300 font-medium uppercase tracking-wider mb-1.5">
               Password
             </label>
             <input
@@ -106,22 +106,22 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              className="w-full px-3.5 py-2.5 bg-[#0a0a0d] text-white rounded-xl border border-[#27272a] focus:border-red-500 focus:outline-none font-mono text-xs transition-colors"
+              className="w-full px-3.5 py-2.5 bg-surface-900 text-white rounded-xl border border-surface-700 focus:border-accent-500 focus:outline-none text-xs transition-colors"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 active:bg-red-700 text-white font-semibold font-mono text-xs uppercase tracking-wider transition-colors disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-red-950/50"
+            className="w-full mt-2 py-2.5 rounded-xl bg-accent-500 hover:bg-accent-400 active:bg-accent-600 text-surface-950 font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer shadow-md"
           >
             <Lock className="w-3.5 h-3.5" />
             <span>{loading ? 'Authenticating...' : 'Sign in to admin'}</span>
           </button>
         </form>
 
-        <div className="mt-6 pt-4 border-t border-[#27272a] text-center">
-          <p className="text-[11px] font-mono text-zinc-500">
+        <div className="mt-6 pt-4 border-t border-surface-700 text-center">
+          <p className="text-xs text-slate-500">
             Protected area · authorized access only
           </p>
         </div>

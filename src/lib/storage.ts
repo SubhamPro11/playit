@@ -2,12 +2,31 @@ import { supabase, isSupabaseConfigured } from './supabase';
 
 const STORAGE_BUCKET = 'thumbnails';
 
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+
+/**
+ * Validates if an image URL is syntactically valid and uses http/https/data protocol.
+ */
+export function isValidImageUrl(url: string): boolean {
+  if (!url || typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  return (
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('data:image/')
+  );
+}
+
 /**
  * Upload an image file to Supabase Storage and retrieve its public URL.
  */
 export async function uploadThumbnailImage(file: File): Promise<string> {
   if (!file.type.startsWith('image/')) {
-    throw new Error('Please upload a valid image file (PNG, JPG, WebP)');
+    throw new Error('Please upload a valid image file (PNG, JPG, WebP, SVG)');
+  }
+
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    throw new Error('Image file is too large (maximum allowed is 5 MB)');
   }
 
   // If Supabase Storage is configured, upload directly to the thumbnails bucket

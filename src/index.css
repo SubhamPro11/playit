@@ -3,30 +3,55 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg-app: #0f1115;
+    --bg-surface: #14171e;
+    --bg-surface-raised: #1a1f28;
+    --border-subtle: #242b38;
+    --border-focus: #f59e0b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-amber: #f59e0b;
+  }
+
   body {
-    background-color: #08080a;
-    color: #f4f4f5;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #0f1115;
+    color: #f1f5f9;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: rgba(245, 158, 11, 0.3);
+    color: #ffffff;
+  }
+
+  /* Accessible intentional keyboard focus */
+  :focus-visible {
+    outline: 2px solid #f59e0b;
+    outline-offset: 2px;
   }
 }
 
-/* Custom Scrollbar for sleek jet black surfaces */
+/* Custom Studio Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #08080a;
+  background: #0f1115;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: #242b38;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #dc2626;
+  background: #f59e0b;
 }
 
 /* Hide scrollbar utility */

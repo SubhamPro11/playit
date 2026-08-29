@@ -29,10 +29,10 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
           <button
             key={cat}
             onClick={() => handleClick(cat)}
-            className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-mono font-medium transition-all cursor-pointer shadow-xs ${
+            className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
               isSelected
-                ? 'bg-lime-400 text-black font-semibold ring-1 ring-lime-300/50'
-                : 'bg-[#131d33] text-slate-300 hover:bg-[#1e293b] hover:text-slate-100 border border-[#1e293b]'
+                ? 'bg-accent-500 text-surface-950 font-bold'
+                : 'bg-surface-850 text-slate-300 hover:bg-surface-800 hover:text-white border border-surface-700 hover:border-surface-600'
             }`}
           >
             {cat}

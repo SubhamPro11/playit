@@ -92,15 +92,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#08080a] text-zinc-200 font-sans">
+    <div className="min-h-screen bg-surface-900 text-slate-200 font-sans">
       
-      {/* Top Admin Navigation */}
-      <header className="sticky top-0 z-30 bg-[#0a0a0d]/95 backdrop-blur-md border-b border-[#27272a] px-4 sm:px-6 lg:px-8 py-3">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      {/* Header */}
+      <header className="sticky top-0 z-30 bg-surface-900/95 backdrop-blur-md border-b border-surface-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
           
           <div className="flex items-center gap-4">
             <BrandLogo />
-            <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-red-600/20 text-red-400 border border-red-500/30 text-[10px] font-mono font-bold tracking-wider uppercase">
+            <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-accent-500/15 text-accent-400 border border-accent-500/30 text-[10px] font-mono font-bold tracking-wider uppercase">
               Admin console
             </span>
           </div>
@@ -108,7 +108,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <div className="flex items-center gap-3">
             <button
               onClick={onViewPublicSite}
-              className="px-3.5 py-2 rounded-xl bg-[#141418] hover:bg-[#1f1f26] text-zinc-300 hover:text-white border border-[#27272a] font-mono text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-3.5 py-2 rounded-xl bg-surface-850 hover:bg-surface-800 text-slate-300 hover:text-white border border-surface-700 font-mono text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <span>Public site</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -116,7 +116,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             <button
               onClick={onLogout}
-              className="px-3.5 py-2 rounded-xl bg-[#141418] hover:bg-red-500/10 text-zinc-400 hover:text-red-400 border border-[#27272a] hover:border-red-500/30 font-mono text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-3.5 py-2 rounded-xl bg-surface-850 hover:bg-surface-800 text-slate-400 hover:text-red-400 border border-surface-700 hover:border-red-500/30 font-mono text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Sign out</span>
@@ -130,25 +130,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Database Connection Status Banner */}
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border bg-[#111114]">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border border-surface-700 bg-surface-850">
           <div className="flex items-center gap-2.5">
             {isSupabaseConfigured ? (
               <>
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="font-mono text-xs text-emerald-400 font-semibold">
+                <span className="text-xs text-emerald-400 font-semibold">
                   Supabase Cloud Database Connected
                 </span>
-                <span className="text-[11px] font-mono text-zinc-500 hidden md:inline">
+                <span className="text-xs text-slate-500 hidden md:inline">
                   (Changes persist permanently across all deployments)
                 </span>
               </>
             ) : (
               <>
-                <AlertTriangle className="w-4 h-4 text-amber-400" />
-                <span className="font-mono text-xs text-amber-400 font-semibold">
+                <AlertTriangle className="w-4 h-4 text-accent-400" />
+                <span className="text-xs text-accent-400 font-semibold">
                   Local Sandbox Mode
                 </span>
-                <span className="text-[11px] font-mono text-zinc-400">
+                <span className="text-xs text-slate-400">
                   (Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in deployment environment variables to persist in cloud)
                 </span>
               </>
@@ -175,20 +175,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
 
         {/* Controls Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-[#27272a]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-surface-700">
           
           <div>
             <h1 className="font-sans font-bold text-2xl text-white">
               Playlist entries
             </h1>
-            <p className="font-mono text-xs text-zinc-400 mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               Manage, edit, reorder, and upload media thumbnails for all {videos.length} items.
             </p>
           </div>
 
           <button
             onClick={() => setIsAddOpen(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-mono text-xs font-semibold uppercase tracking-wider transition-colors shrink-0 shadow-lg shadow-red-950/50 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-accent-500 hover:bg-accent-400 active:bg-accent-600 text-surface-950 font-bold text-xs uppercase tracking-wider transition-colors shrink-0 shadow-md cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Add new entry</span>
@@ -198,13 +198,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {/* Filter / Search Row */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6">
           <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search playlist table..."
-              className="w-full pl-9 pr-4 py-2 bg-[#111114] text-xs text-zinc-200 rounded-xl border border-[#27272a] focus:border-red-500 focus:outline-none font-sans transition-colors"
+              className="w-full pl-9 pr-4 py-2 bg-surface-850 text-xs text-slate-200 rounded-xl border border-surface-700 focus:border-accent-500 focus:outline-none font-sans transition-colors"
             />
           </div>
 
@@ -212,10 +212,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value as Category)}
-              className="px-3 py-2 bg-[#111114] text-xs text-zinc-300 rounded-xl border border-[#27272a] focus:border-red-500 focus:outline-none font-sans cursor-pointer transition-colors"
+              className="px-3 py-2 bg-surface-850 text-xs text-slate-300 rounded-xl border border-surface-700 focus:border-accent-500 focus:outline-none font-sans cursor-pointer transition-colors"
             >
               {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat} className="bg-[#111114] text-zinc-200">
+                <option key={cat} value={cat} className="bg-surface-850 text-slate-200">
                   {cat === 'All' ? 'All categories' : cat}
                 </option>
               ))}
@@ -224,11 +224,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
 
         {/* Entries Table */}
-        <div className="bg-[#111114] border border-[#27272a] rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-surface-850 border border-surface-700 rounded-xl overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-[#27272a] bg-[#0a0a0d] text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
+                <tr className="border-b border-surface-700 bg-surface-900 text-xs text-slate-400 font-semibold uppercase tracking-wider">
                   <th className="py-3 px-4 w-16 text-center">Order</th>
                   <th className="py-3 px-4 w-24">Thumb</th>
                   <th className="py-3 px-4">Title & Details</th>
@@ -237,21 +237,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <th className="py-3 px-4 w-28 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#27272a] text-xs">
+              <tbody className="divide-y divide-surface-700 text-xs">
                 {filteredVideos.length > 0 ? (
                   filteredVideos.map((video, idx) => (
                     <tr
                       key={video.id}
-                      className="hover:bg-[#16161c] transition-colors group"
+                      className="hover:bg-surface-800 transition-colors group"
                     >
                       {/* Order */}
-                      <td className="py-3 px-4 text-center font-mono text-red-400 font-semibold">
+                      <td className="py-3 px-4 text-center font-mono text-accent-400 font-semibold">
                         #{String(video.orderIndex).padStart(2, '0')}
                       </td>
 
                       {/* Thumbnail */}
                       <td className="py-3 px-4">
-                        <div className="w-16 aspect-video rounded-lg overflow-hidden bg-black border border-[#27272a] relative">
+                        <div className="w-16 aspect-video rounded-lg overflow-hidden bg-surface-950 border border-surface-700 relative">
                           <img
                             src={video.thumbnailUrl}
                             alt={video.title}
@@ -265,22 +265,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
                       {/* Title & Link */}
                       <td className="py-3 px-4 max-w-xs sm:max-w-md">
-                        <div className="font-sans font-semibold text-white group-hover:text-red-400 transition-colors">
+                        <div className="font-sans font-semibold text-white group-hover:text-accent-400 transition-colors">
                           {video.title}
                         </div>
                         <a
                           href={video.externalLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-mono text-[11px] text-zinc-500 hover:text-zinc-300 truncate block mt-0.5"
+                          className="font-mono text-xs text-slate-400 hover:text-slate-200 truncate block mt-0.5"
                         >
                           {video.externalLink}
                         </a>
                       </td>
 
                       {/* Category */}
-                      <td className="py-3 px-4 font-mono text-[11px] text-zinc-400">
-                        <span className="px-2.5 py-1 rounded-md bg-[#141418] border border-[#27272a] inline-block">
+                      <td className="py-3 px-4 text-xs text-slate-300">
+                        <span className="px-2.5 py-1 rounded-md bg-surface-900 border border-surface-700 inline-block">
                           {video.category}
                         </span>
                       </td>
@@ -292,7 +292,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             onClick={() => handleMoveUp(idx)}
                             disabled={idx === 0}
                             title="Move up"
-                            className="p-1 rounded-md bg-[#141418] hover:bg-[#1f1f26] text-zinc-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer border border-[#27272a]"
+                            className="p-1 rounded-md bg-surface-900 hover:bg-surface-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer border border-surface-700"
                           >
                             <ArrowUp className="w-3.5 h-3.5" />
                           </button>
@@ -300,7 +300,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             onClick={() => handleMoveDown(idx)}
                             disabled={idx === filteredVideos.length - 1}
                             title="Move down"
-                            className="p-1 rounded-md bg-[#141418] hover:bg-[#1f1f26] text-zinc-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer border border-[#27272a]"
+                            className="p-1 rounded-md bg-surface-900 hover:bg-surface-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer border border-surface-700"
                           >
                             <ArrowDown className="w-3.5 h-3.5" />
                           </button>
@@ -313,14 +313,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           <button
                             onClick={() => setEditingVideo(video)}
                             title="Edit entry"
-                            className="p-1.5 rounded-lg bg-[#141418] hover:bg-zinc-700 text-zinc-300 hover:text-white transition-colors cursor-pointer border border-[#27272a]"
+                            className="p-1.5 rounded-lg bg-surface-900 hover:bg-surface-750 text-slate-300 hover:text-white transition-colors cursor-pointer border border-surface-700"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => setDeletingVideo(video)}
                             title="Delete entry"
-                            className="p-1.5 rounded-lg bg-[#141418] hover:bg-red-500/20 text-zinc-400 hover:text-red-400 transition-colors cursor-pointer border border-[#27272a]"
+                            className="p-1.5 rounded-lg bg-surface-900 hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors cursor-pointer border border-surface-700"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -330,7 +330,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-zinc-500 font-mono">
+                    <td colSpan={6} className="py-12 text-center text-slate-500 font-mono">
                       No matching playlist entries found.
                     </td>
                   </tr>

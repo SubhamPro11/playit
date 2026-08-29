@@ -8,22 +8,26 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', '"Inter"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       colors: {
-        navy: {
-          950: '#070a12',
-          900: '#0b0f19',
-          850: '#0f172a',
-          800: '#131d33',
-          700: '#1e293b',
-          600: '#334155',
+        surface: {
+          950: '#090a0d',
+          900: '#0f1115',
+          850: '#14171e',
+          800: '#1a1f28',
+          750: '#222834',
+          700: '#2c3342',
+          600: '#3d4659',
+          500: '#56617a',
         },
-        lime: {
-          400: '#a3e635',
-          500: '#84cc16',
-        }
+        accent: {
+          400: '#fbbf24',
+          500: '#f59e0b',
+          600: '#d97706',
+          700: '#b45309',
+        },
       },
     },
   },
