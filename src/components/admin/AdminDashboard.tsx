@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, LogOut, ExternalLink, Search, CheckCircle2, AlertTriangle, Inbox, Check, XCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, LogOut, ExternalLink, Search, CheckCircle2, AlertTriangle, Inbox, Check, XCircle, Activity, RefreshCw } from 'lucide-react';
 import { Video, StationSubmission } from '../../types/video';
 import { CATEGORIES, Category } from '../../data/playlist';
 import { EditVideoModal } from './EditVideoModal';
 import { AddVideoModal } from './AddVideoModal';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import { BrandLogo } from '../BrandLogo';
+import { useLinkHealth } from '../../hooks/useLinkHealth';
 
 interface AdminDashboardProps {
   videos: Video[];
@@ -46,9 +47,39 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [deletingVideo, setDeletingVideo] = useState<Video | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
 
+  // Link Health State
+  const {
+    healthMap,
+    isCheckingAll,
+    progress,
+    checkSingleLink,
+    checkAllLinks,
+  } = useLinkHealth();
+  const [healthFilter, setHealthFilter] = useState<'all' | 'flagged' | 'live'>('all');
+  const [singleTestingId, setSingleTestingId] = useState<string | null>(null);
+
   const pendingSubmissionsCount = useMemo(() => {
     return submissions.filter((s) => s.status === 'pending').length;
   }, [submissions]);
+
+  const healthStats = useMemo(() => {
+    let live = 0;
+    let flagged = 0;
+    let unchecked = 0;
+
+    videos.forEach((v) => {
+      const h = healthMap[v.id];
+      if (!h || h.status === 'unknown') {
+        unchecked++;
+      } else if (h.status === 'live' || h.status === 'redirect') {
+        live++;
+      } else if (h.status === 'broken' || h.status === 'timeout') {
+        flagged++;
+      }
+    });
+
+    return { live, flagged, unchecked, total: videos.length };
+  }, [videos, healthMap]);
 
   const showFeedback = (type: 'success' | 'error', text: string) => {
     setStatusMessage({ type, text });
@@ -57,16 +88,36 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }, 4000);
   };
 
+  const handleTestSingle = async (video: Video) => {
+    setSingleTestingId(video.id);
+    const rep = await checkSingleLink(video);
+    setSingleTestingId(null);
+    if (rep.status === 'live') {
+      showFeedback('success', `"${video.title}" is live and reachable`);
+    } else {
+      showFeedback('error', `"${video.title}" reported ${rep.status.toUpperCase()} (${rep.error || 'Check failed'})`);
+    }
+  };
+
   const filteredVideos = useMemo(() => {
     return videos
       .filter((v) => {
         const matchCategory = selectedCategory === 'All' || v.category === selectedCategory;
-        if (!searchQuery.trim()) return matchCategory;
-        const q = searchQuery.toLowerCase();
-        return matchCategory && (v.title.toLowerCase().includes(q) || v.externalLink.toLowerCase().includes(q));
+        const q = searchQuery.trim().toLowerCase();
+        const matchSearch = !q || v.title.toLowerCase().includes(q) || v.externalLink.toLowerCase().includes(q);
+
+        const h = healthMap[v.id];
+        let matchHealth = true;
+        if (healthFilter === 'flagged') {
+          matchHealth = h?.status === 'broken' || h?.status === 'timeout';
+        } else if (healthFilter === 'live') {
+          matchHealth = h?.status === 'live' || h?.status === 'redirect';
+        }
+
+        return matchCategory && matchSearch && matchHealth;
       })
       .sort((a, b) => a.orderIndex - b.orderIndex);
-  }, [videos, searchQuery, selectedCategory]);
+  }, [videos, searchQuery, selectedCategory, healthFilter, healthMap]);
 
   const handleMoveUp = async (index: number) => {
     if (index <= 0) return;
@@ -227,6 +278,90 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         {activeTab === 'entries' ? (
           <>
+            {/* Link Health Monitoring Widget */}
+            <div className="mb-6 p-4 rounded-xl border border-surface-700 bg-surface-850 shadow-sm">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-accent-400" />
+                    <h2 className="font-sans font-bold text-sm text-white">
+                      Dead-Link Health Monitor
+                    </h2>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Lightweight connectivity checks across all {videos.length} external streams. Flagged links are surfaced for manual review only.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => checkAllLinks(videos)}
+                    disabled={isCheckingAll}
+                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-surface-800 hover:bg-surface-750 text-slate-200 hover:text-white border border-surface-700 hover:border-surface-600 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer shadow-xs"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isCheckingAll ? 'animate-spin text-accent-400' : ''}`} />
+                    <span>{isCheckingAll ? `Auditing (${progress.current}/${progress.total})...` : 'Run Health Audit'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Progress Bar when checking */}
+              {isCheckingAll && (
+                <div className="mt-3 w-full bg-surface-950 rounded-full h-1.5 overflow-hidden border border-surface-700">
+                  <div
+                    className="bg-accent-500 h-full transition-all duration-200"
+                    style={{ width: `${(progress.current / Math.max(progress.total, 1)) * 100}%` }}
+                  />
+                </div>
+              )}
+
+              {/* Health Quick Filters */}
+              <div className="mt-3.5 pt-3 border-t border-surface-700/80 flex items-center gap-2 flex-wrap text-xs">
+                <span className="text-slate-500 font-mono text-[11px]">Filter by health:</span>
+                <button
+                  type="button"
+                  onClick={() => setHealthFilter('all')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                    healthFilter === 'all'
+                      ? 'bg-surface-700 text-white font-semibold'
+                      : 'bg-surface-900 text-slate-400 hover:text-slate-200 border border-surface-750'
+                  }`}
+                >
+                  All ({healthStats.total})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHealthFilter('live')}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                    healthFilter === 'live'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
+                      : 'bg-surface-900 text-slate-400 hover:text-slate-200 border border-surface-750'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span>Reachable ({healthStats.live})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHealthFilter('flagged')}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                    healthFilter === 'flagged'
+                      ? 'bg-red-500/20 text-red-300 border border-red-500/40 font-semibold'
+                      : 'bg-surface-900 text-slate-400 hover:text-slate-200 border border-surface-750'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-red-400" />
+                  <span>Needs Review ({healthStats.flagged})</span>
+                </button>
+                {healthStats.unchecked > 0 && (
+                  <span className="text-slate-500 text-[11px] ml-auto">
+                    {healthStats.unchecked} unchecked
+                  </span>
+                )}
+              </div>
+            </div>
+
             {/* Controls Bar */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-surface-700">
               <div>
@@ -284,105 +419,148 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <th className="py-3 px-4 w-16 text-center">Order</th>
                       <th className="py-3 px-4 w-24">Thumb</th>
                       <th className="py-3 px-4">Title & Details</th>
-                      <th className="py-3 px-4 w-44">Category</th>
-                      <th className="py-3 px-4 w-28 text-center">Reorder</th>
+                      <th className="py-3 px-4 w-36">Health</th>
+                      <th className="py-3 px-4 w-36">Category</th>
+                      <th className="py-3 px-4 w-24 text-center">Reorder</th>
                       <th className="py-3 px-4 w-28 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-surface-700 text-xs">
                     {filteredVideos.length > 0 ? (
-                      filteredVideos.map((video, idx) => (
-                        <tr
-                          key={video.id}
-                          className="hover:bg-surface-800 transition-colors group"
-                        >
-                          {/* Order */}
-                          <td className="py-3 px-4 text-center font-mono text-accent-400 font-semibold">
-                            #{String(video.orderIndex).padStart(2, '0')}
-                          </td>
+                      filteredVideos.map((video, idx) => {
+                        const health = healthMap[video.id];
+                        const isTestingThis = singleTestingId === video.id;
 
-                          {/* Thumbnail */}
-                          <td className="py-3 px-4">
-                            <div className="w-16 aspect-video rounded-lg overflow-hidden bg-surface-950 border border-surface-700 relative">
-                              <img
-                                src={video.thumbnailUrl}
-                                alt={video.title}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  (e.target as HTMLElement).style.display = 'none';
-                                }}
-                              />
-                            </div>
-                          </td>
+                        return (
+                          <tr
+                            key={video.id}
+                            className="hover:bg-surface-800 transition-colors group"
+                          >
+                            {/* Order */}
+                            <td className="py-3 px-4 text-center font-mono text-accent-400 font-semibold">
+                              #{String(video.orderIndex).padStart(2, '0')}
+                            </td>
 
-                          {/* Title & Link */}
-                          <td className="py-3 px-4 max-w-xs sm:max-w-md">
-                            <div className="font-sans font-semibold text-white group-hover:text-accent-400 transition-colors">
-                              {video.title}
-                            </div>
-                            <a
-                              href={video.externalLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="font-mono text-xs text-slate-400 hover:text-slate-200 truncate block mt-0.5"
-                            >
-                              {video.externalLink}
-                            </a>
-                          </td>
+                            {/* Thumbnail */}
+                            <td className="py-3 px-4">
+                              <div className="w-16 aspect-video rounded-lg overflow-hidden bg-surface-950 border border-surface-700 relative">
+                                <img
+                                  src={video.thumbnailUrl}
+                                  alt={video.title}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLElement).style.display = 'none';
+                                  }}
+                                />
+                              </div>
+                            </td>
 
-                          {/* Category */}
-                          <td className="py-3 px-4 text-xs text-slate-300">
-                            <span className="px-2.5 py-1 rounded-md bg-surface-900 border border-surface-700 inline-block">
-                              {video.category}
-                            </span>
-                          </td>
-
-                          {/* Reorder Buttons */}
-                          <td className="py-3 px-4 text-center">
-                            <div className="inline-flex items-center gap-1">
-                              <button
-                                onClick={() => handleMoveUp(idx)}
-                                disabled={idx === 0}
-                                title="Move up"
-                                className="p-1 rounded-md bg-surface-900 hover:bg-surface-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer border border-surface-700"
+                            {/* Title & Link */}
+                            <td className="py-3 px-4 max-w-xs sm:max-w-md">
+                              <div className="font-sans font-semibold text-white group-hover:text-accent-400 transition-colors">
+                                {video.title}
+                              </div>
+                              <a
+                                href={video.externalLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-mono text-xs text-slate-400 hover:text-slate-200 truncate block mt-0.5"
                               >
-                                <ArrowUp className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={() => handleMoveDown(idx)}
-                                disabled={idx === filteredVideos.length - 1}
-                                title="Move down"
-                                className="p-1 rounded-md bg-surface-900 hover:bg-surface-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer border border-surface-700"
-                              >
-                                <ArrowDown className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </td>
+                                {video.externalLink}
+                              </a>
+                            </td>
 
-                          {/* Actions */}
-                          <td className="py-3 px-4 text-right">
-                            <div className="inline-flex items-center gap-1.5">
-                              <button
-                                onClick={() => setEditingVideo(video)}
-                                title="Edit entry"
-                                className="p-1.5 rounded-lg bg-surface-900 hover:bg-surface-750 text-slate-300 hover:text-white transition-colors cursor-pointer border border-surface-700"
-                              >
-                                <Edit2 className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={() => setDeletingVideo(video)}
-                                title="Delete entry"
-                                className="p-1.5 rounded-lg bg-surface-900 hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors cursor-pointer border border-surface-700"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
+                            {/* Health Indicator & Quick Test */}
+                            <td className="py-3 px-4">
+                              <div className="flex items-center gap-2">
+                                {health?.status === 'live' ? (
+                                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono text-[11px]">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                    <span>Live</span>
+                                  </span>
+                                ) : health?.status === 'redirect' ? (
+                                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono text-[11px]">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                                    <span>Redirect</span>
+                                  </span>
+                                ) : health?.status === 'broken' || health?.status === 'timeout' ? (
+                                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-red-500/10 text-red-400 border border-red-500/20 font-mono text-[11px]" title={health.error || 'Check failed'}>
+                                    <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                                    <span>Review</span>
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-surface-900 text-slate-500 border border-surface-750 font-mono text-[11px]">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                                    <span>Unchecked</span>
+                                  </span>
+                                )}
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleTestSingle(video)}
+                                  disabled={isTestingThis || isCheckingAll}
+                                  title="Test URL live connectivity"
+                                  className="p-1 rounded bg-surface-900 hover:bg-surface-750 text-slate-400 hover:text-white border border-surface-750 transition-colors cursor-pointer disabled:opacity-40"
+                                >
+                                  <RefreshCw className={`w-3 h-3 ${isTestingThis ? 'animate-spin text-accent-400' : ''}`} />
+                                </button>
+                              </div>
+                            </td>
+
+                            {/* Category */}
+                            <td className="py-3 px-4 text-xs text-slate-300">
+                              <span className="px-2.5 py-1 rounded-md bg-surface-900 border border-surface-700 inline-block">
+                                {video.category}
+                              </span>
+                            </td>
+
+                            {/* Reorder Buttons */}
+                            <td className="py-3 px-4 text-center">
+                              <div className="inline-flex items-center gap-1">
+                                <button
+                                  onClick={() => handleMoveUp(idx)}
+                                  disabled={idx === 0}
+                                  title="Move up"
+                                  className="p-1 rounded-md bg-surface-900 hover:bg-surface-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer border border-surface-700"
+                                >
+                                  <ArrowUp className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  onClick={() => handleMoveDown(idx)}
+                                  disabled={idx === filteredVideos.length - 1}
+                                  title="Move down"
+                                  className="p-1 rounded-md bg-surface-900 hover:bg-surface-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer border border-surface-700"
+                                >
+                                  <ArrowDown className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </td>
+
+                            {/* Actions */}
+                            <td className="py-3 px-4 text-right">
+                              <div className="inline-flex items-center gap-1.5">
+                                <button
+                                  onClick={() => setEditingVideo(video)}
+                                  title="Edit entry"
+                                  className="p-1.5 rounded-lg bg-surface-900 hover:bg-surface-750 text-slate-300 hover:text-white transition-colors cursor-pointer border border-surface-700"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  onClick={() => setDeletingVideo(video)}
+                                  title="Delete entry"
+                                  className="p-1.5 rounded-lg bg-surface-900 hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors cursor-pointer border border-surface-700"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
                     ) : (
                       <tr>
-                        <td colSpan={6} className="py-12 text-center text-slate-500 font-mono">
+                        <td colSpan={7} className="py-12 text-center text-slate-500 font-mono">
                           No matching playlist entries found.
                         </td>
                       </tr>

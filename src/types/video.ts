@@ -6,6 +6,8 @@ export interface Video {
   thumbnailUrl: string;
   category: string;
   accentColor?: string;
+  creator?: string;
+  creatorUrl?: string;
 }
 
 export interface PlaylistData {
@@ -46,5 +48,18 @@ export interface StationSubmission {
   status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
 }
+
+export type HealthStatusType = 'live' | 'redirect' | 'broken' | 'timeout' | 'checking' | 'unknown';
+
+export interface LinkHealthReport {
+  videoId: string;
+  url: string;
+  status: HealthStatusType;
+  httpStatus?: number;
+  lastChecked: string;
+  responseTimeMs?: number;
+  error?: string;
+}
+
 
 

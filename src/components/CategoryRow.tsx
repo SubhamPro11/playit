@@ -10,6 +10,7 @@ interface CategoryRowProps {
   isFavorite: (id: string) => boolean;
   onToggleFavorite: (id: string) => void;
   onViewAllCategory: (category: Category) => void;
+  onNavigatePermalink?: (slug: string) => void;
 }
 
 export const CategoryRow: React.FC<CategoryRowProps> = ({
@@ -18,6 +19,7 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({
   isFavorite,
   onToggleFavorite,
   onViewAllCategory,
+  onNavigatePermalink,
 }) => {
   const rowRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -126,6 +128,7 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({
                 variant="row"
                 isFavorite={isFavorite(video.id)}
                 onToggleFavorite={onToggleFavorite}
+                onNavigatePermalink={onNavigatePermalink}
               />
             </div>
           ))}

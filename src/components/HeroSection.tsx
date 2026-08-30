@@ -13,6 +13,7 @@ interface HeroSectionProps {
   featuredVideos: Video[];
   isFavorite: (id: string) => boolean;
   onToggleFavorite: (id: string) => void;
+  onSurpriseMe?: () => void;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
@@ -24,6 +25,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   featuredVideos,
   isFavorite,
   onToggleFavorite,
+  onSurpriseMe,
 }) => {
   const [selectedSpotlightIndex, setSelectedSpotlightIndex] = useState(0);
   const currentSpotlight = featuredVideos[selectedSpotlightIndex] || featuredVideos[0];
@@ -48,40 +50,55 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <div className="lg:col-span-7 flex flex-col justify-center">
             
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-accent-500"></span>
-              <span className="text-xs text-accent-400 font-semibold tracking-wider uppercase">
-                Curated soundscapes & web radio
+              <span className="w-2.5 h-2.5 rounded-full bg-accent-500 animate-pulse" />
+              <span className="font-mono text-xs uppercase tracking-widest text-accent-400 font-semibold">
+                Curated Audio Index
               </span>
             </div>
 
-            <h1 className="font-sans font-bold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-[1.15]">
-              Discover 70 independent audio worlds.
+            <h1 className="font-sans font-black text-3xl sm:text-5xl text-white tracking-tight leading-[1.1] mb-4">
+              70 Ambient Radios, Nostalgia & Soundscapes
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-400 mt-3 sm:mt-4 leading-relaxed max-w-xl">
-              An open collection of ambient web radios, highway bus mixtapes, retro television nostalgia, and cultural music projects.
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl mb-2">
+              An open directory of 70 independent aesthetic web audio stations — from late-night highway drives and retro Doordarshan memories to temple bells and rain on tin roofs.
             </p>
 
-            {/* Primary Search Input in Hero */}
-            <div className="mt-6 sm:mt-8 w-full max-w-lg">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  <Search className="w-5 h-5" />
+            {/* Primary Search Input & Quick Actions in Hero */}
+            <div className="mt-6 sm:mt-8 w-full max-w-xl">
+              <div className="flex items-center gap-2.5">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <Search className="w-5 h-5" />
+                  </div>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => onSearchChange(e.target.value)}
+                    placeholder="Search 70 playlists by name, mood, or domain..."
+                    className="w-full pl-12 pr-10 py-3 bg-surface-850 text-white placeholder:text-slate-500 rounded-xl border border-surface-700 focus:border-accent-500 focus:ring-1 focus:ring-accent-500/30 focus:outline-none transition-all text-sm sm:text-base shadow-md"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={onClearSearch}
+                      aria-label="Clear search"
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  placeholder="Search 70 playlists by name, mood, or domain..."
-                  className="w-full pl-12 pr-10 py-3 bg-surface-850 text-white placeholder:text-slate-500 rounded-xl border border-surface-700 focus:border-accent-500 focus:ring-1 focus:ring-accent-500/30 focus:outline-none transition-all text-sm sm:text-base shadow-md"
-                />
-                {searchQuery && (
+
+                {/* Prominent Surprise Me Quick Button */}
+                {onSurpriseMe && (
                   <button
-                    onClick={onClearSearch}
-                    aria-label="Clear search"
-                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    type="button"
+                    onClick={onSurpriseMe}
+                    title="Jump to a random station"
+                    className="flex items-center gap-2 px-4 py-3 bg-accent-500 hover:bg-accent-400 text-surface-950 font-bold rounded-xl text-sm transition-all shadow-md hover:shadow-accent-500/20 active:scale-95 cursor-pointer whitespace-nowrap"
                   >
-                    <X className="w-4 h-4" />
+                    <span>🎲</span>
+                    <span className="hidden sm:inline">Surprise me</span>
                   </button>
                 )}
               </div>

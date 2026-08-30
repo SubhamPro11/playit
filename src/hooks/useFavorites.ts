@@ -1,17 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const STORAGE_KEY = 'max_playlist_favs_v2';
+const STORAGE_KEY = 'playit_favorites';
+const LEGACY_STORAGE_KEY = 'max_playlist_favs_v2';
 
 export function useFavorites() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
     }
   });
 
+  // Sync state changes to localStorage
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(favoriteIds));
@@ -19,6 +21,22 @@ export function useFavorites() {
       console.error('Failed to save favorites to localStorage', e);
     }
   }, [favoriteIds]);
+
+  // Multi-tab synchronization
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY && e.newValue) {
+        try {
+          setFavoriteIds(JSON.parse(e.newValue));
+        } catch {
+          // Ignore parse errors
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const toggleFavorite = useCallback((id: string) => {
     setFavoriteIds((prev) =>
@@ -38,3 +56,4 @@ export function useFavorites() {
     isFavorite,
   };
 }
+

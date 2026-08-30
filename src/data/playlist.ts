@@ -222,7 +222,9 @@ export const PLAYLIST: PlaylistData = {
     "externalLink": "https://dhun.dploy.avichal.me",
     "thumbnailUrl": "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80",
     "category": "Classical & instrumental",
-    "accentColor": "#0284c7"
+    "accentColor": "#0284c7",
+    "creator": "Avichal",
+    "creatorUrl": "https://avichal.me"
   },
   {
     "id": "vid-24",
@@ -231,7 +233,9 @@ export const PLAYLIST: PlaylistData = {
     "externalLink": "https://sidd.app/odia-old-album-songs",
     "thumbnailUrl": "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=800&q=80",
     "category": "Folk & regional",
-    "accentColor": "#ca8a04"
+    "accentColor": "#ca8a04",
+    "creator": "Siddharth",
+    "creatorUrl": "https://sidd.app"
   },
   {
     "id": "vid-25",
@@ -276,7 +280,9 @@ export const PLAYLIST: PlaylistData = {
     "externalLink": "http://caravan.naveengumaste.me",
     "thumbnailUrl": "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80",
     "category": "Nostalgia & retro",
-    "accentColor": "#d97706"
+    "accentColor": "#d97706",
+    "creator": "Naveen Gumaste",
+    "creatorUrl": "https://naveengumaste.me"
   },
   {
     "id": "vid-30",
@@ -348,7 +354,9 @@ export const PLAYLIST: PlaylistData = {
     "externalLink": "https://ramslam007.github.io/fibeats",
     "thumbnailUrl": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
     "category": "Ambient & mood",
-    "accentColor": "#818cf8"
+    "accentColor": "#8b5cf6",
+    "creator": "ramslam007",
+    "creatorUrl": "https://github.com/ramslam007"
   },
   {
     "id": "vid-38",
@@ -447,7 +455,9 @@ export const PLAYLIST: PlaylistData = {
     "externalLink": "http://train.hereco.xyz",
     "thumbnailUrl": "https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=800&q=80",
     "category": "Travel & transit",
-    "accentColor": "#0284c7"
+    "accentColor": "#0284c7",
+    "creator": "HereCo",
+    "creatorUrl": "https://hereco.xyz"
   },
   {
     "id": "vid-49",
@@ -492,7 +502,9 @@ export const PLAYLIST: PlaylistData = {
     "externalLink": "http://conductor-fm.nikhilkumar007.com",
     "thumbnailUrl": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80",
     "category": "Radio & mixtapes",
-    "accentColor": "#10b981"
+    "accentColor": "#10b981",
+    "creator": "Nikhil Kumar",
+    "creatorUrl": "https://nikhilkumar007.com"
   },
   {
     "id": "vid-54",

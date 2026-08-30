@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, ArrowUpRight } from 'lucide-react';
+import { Heart, ArrowUpRight, Info } from 'lucide-react';
 import { Video, getEffectiveThumbnailUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../types/video';
+import { getStationSlug } from '../utils/slug';
 
 interface VideoCardProps {
   video: Video;
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void;
+  onNavigatePermalink?: (slug: string) => void;
   variant?: 'grid' | 'row';
 }
 
@@ -13,6 +15,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   video,
   isFavorite,
   onToggleFavorite,
+  onNavigatePermalink,
   variant = 'row',
 }) => {
   const [imageError, setImageError] = useState(false);
@@ -32,6 +35,14 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     e.preventDefault();
     e.stopPropagation();
     onToggleFavorite(video.id);
+  };
+
+  const handleDetailsClick = (e: React.MouseEvent) => {
+    if (onNavigatePermalink) {
+      e.preventDefault();
+      e.stopPropagation();
+      onNavigatePermalink(getStationSlug(video.title));
+    }
   };
 
   const handleImageError = () => {
@@ -116,9 +127,22 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
         {/* Unified Outbound Destination Bar */}
         <div className="mt-3 pt-2.5 border-t border-surface-700/80 flex items-center justify-between text-xs text-slate-400">
-          <span className="font-mono text-xs truncate max-w-[200px] text-slate-400 group-hover:text-slate-300 transition-colors">
-            {domain}
-          </span>
+          <div className="flex items-center gap-2 truncate max-w-[210px]">
+            <span className="font-mono text-xs truncate text-slate-400 group-hover:text-slate-300 transition-colors">
+              {domain}
+            </span>
+            {onNavigatePermalink && (
+              <button
+                type="button"
+                onClick={handleDetailsClick}
+                title="View station details & permalink"
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-900 hover:bg-surface-750 text-[10px] text-slate-400 hover:text-white border border-surface-700 transition-colors cursor-pointer"
+              >
+                <Info className="w-2.5 h-2.5" />
+                <span>Info</span>
+              </button>
+            )}
+          </div>
           <span className="inline-flex items-center gap-1 text-slate-400 group-hover:text-accent-400 transition-colors font-medium shrink-0">
             <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </span>

@@ -15,6 +15,7 @@ interface PlaylistHeaderProps {
   currentSort: SortOption;
   onSelectSort: (sort: SortOption) => void;
   onShuffle: () => void;
+  onSurpriseMe?: () => void;
   onOpenAbout?: () => void;
   onOpenSuggest?: () => void;
 }
@@ -29,6 +30,7 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
   currentSort,
   onSelectSort,
   onShuffle,
+  onSurpriseMe,
   onOpenAbout,
   onOpenSuggest,
 }) => {
@@ -44,6 +46,19 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
         {/* Controls Toolbar */}
         <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap justify-end">
           
+          {/* Surprise Me Random Picker Button */}
+          {onSurpriseMe && (
+            <button
+              type="button"
+              onClick={onSurpriseMe}
+              title="Pick a random station from the 70 feeds"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-semibold text-accent-400 hover:text-white bg-accent-500/10 hover:bg-accent-500 border border-accent-500/30 hover:border-accent-400 transition-all cursor-pointer shadow-xs group"
+            >
+              <span className="text-sm transition-transform group-hover:rotate-12">🎲</span>
+              <span className="hidden md:inline group-hover:text-surface-950">Surprise me</span>
+            </button>
+          )}
+
           {/* Suggest Station Button */}
           {onOpenSuggest && (
             <button

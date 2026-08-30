@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { Heart } from 'lucide-react';
 import { CATEGORIES, Category } from './data/playlist';
 import { PlaylistHeader } from './components/PlaylistHeader';
 import { HeroSection } from './components/HeroSection';
@@ -17,22 +18,33 @@ import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AboutModal } from './components/AboutModal';
 import { NotFoundPage } from './components/NotFoundPage';
 import { SuggestStationModal } from './components/SuggestStationModal';
+import { StationPermalinkPage } from './components/StationPermalinkPage';
+import { findStationBySlugOrId, getStationSlug } from './utils/slug';
 
-type AppRoute = 'public' | 'admin' | 'not_found';
+type AppRoute = 'public' | 'admin' | 'station' | 'not_found';
 
-function getInitialRoute(): AppRoute {
+interface RouteState {
+  route: AppRoute;
+  stationSlug?: string;
+}
+
+function parseLocation(): RouteState {
   const path = window.location.pathname;
   if (path.startsWith('/admin') || window.location.hash === '#admin') {
-    return 'admin';
+    return { route: 'admin' };
   }
   if (path === '/' || path === '/index.html' || path === '') {
-    return 'public';
+    return { route: 'public' };
   }
-  return 'not_found';
+  const entryMatch = path.match(/^\/(?:entry|station)\/([^/?#]+)/i);
+  if (entryMatch) {
+    return { route: 'station', stationSlug: entryMatch[1] };
+  }
+  return { route: 'not_found' };
 }
 
 export function App() {
-  const [currentRoute, setCurrentRoute] = useState<AppRoute>(getInitialRoute);
+  const [routeState, setRouteState] = useState<RouteState>(parseLocation);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
@@ -74,7 +86,7 @@ export function App() {
   // Listen to browser navigation (popstate/hashchange)
   useEffect(() => {
     const handleRouteChange = () => {
-      setCurrentRoute(getInitialRoute());
+      setRouteState(parseLocation());
     };
 
     window.addEventListener('popstate', handleRouteChange);
@@ -87,8 +99,32 @@ export function App() {
 
   const navigateToPublic = () => {
     window.history.pushState({}, '', '/');
-    setCurrentRoute('public');
+    setRouteState({ route: 'public' });
   };
+
+  const lastRandomIdRef = useRef<string | null>(null);
+
+  const navigateToStation = (slug: string) => {
+    window.history.pushState({}, '', `/entry/${slug}`);
+    setRouteState({ route: 'station', stationSlug: slug });
+  };
+
+  // Surprise Me - picks a random station without repeating the same one twice in a row
+  const handleSurpriseMe = useCallback(() => {
+    if (videos.length === 0) return;
+    const eligible = videos.length > 1 && lastRandomIdRef.current
+      ? videos.filter((v) => v.id !== lastRandomIdRef.current)
+      : videos;
+
+    const chosen = eligible[Math.floor(Math.random() * eligible.length)];
+    if (!chosen) return;
+
+    lastRandomIdRef.current = chosen.id;
+    const slug = getStationSlug(chosen.title);
+    window.history.pushState({}, '', `/entry/${slug}`);
+    setRouteState({ route: 'station', stationSlug: slug });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [videos]);
 
   // Trigger new random shuffle ordering on click
   const handleShuffle = useCallback(() => {
@@ -138,43 +174,50 @@ export function App() {
   // Filtered and Sorted Video List (for Flat Grid mode)
   const processedVideos = useMemo(() => {
     const filtered = videos.filter((video) => {
+      // 1. Search Query filter (matches title, clean domain, or category)
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const cleanDomain = video.externalLink.replace(/^https?:\/\//, '').toLowerCase();
+        const matchesTitle = video.title.toLowerCase().includes(q);
+        const matchesDomain = cleanDomain.includes(q);
+        const matchesCategory = video.category.toLowerCase().includes(q);
+        if (!matchesTitle && !matchesDomain && !matchesCategory) {
+          return false;
+        }
+      }
+
+      // 2. Category selection filter
+      if (selectedCategory !== 'All' && video.category !== selectedCategory) {
+        return false;
+      }
+
+      // 3. Favorites only toggle
       if (favoritesOnly && !favoriteIds.includes(video.id)) {
         return false;
       }
 
-      const matchCategory =
-        selectedCategory === 'All' || video.category === selectedCategory;
-
-      if (!searchQuery.trim()) return matchCategory;
-
-      const query = searchQuery.toLowerCase().trim();
-      const matchTitle = video.title.toLowerCase().includes(query);
-      const matchDomain = video.externalLink.toLowerCase().includes(query);
-      const matchCatText = video.category.toLowerCase().includes(query);
-
-      return matchCategory && (matchTitle || matchDomain || matchCatText);
+      return true;
     });
 
+    // Apply sorting
     return [...filtered].sort((a, b) => {
       if (currentSort === 'az') {
-        return a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
+        return a.title.localeCompare(b.title);
       }
       if (currentSort === 'za') {
-        return b.title.localeCompare(a.title, undefined, { sensitivity: 'base' });
+        return b.title.localeCompare(a.title);
       }
       if (currentSort === 'shuffle') {
-        const orderA = shuffleMap[a.id] ?? a.orderIndex;
-        const orderB = shuffleMap[b.id] ?? b.orderIndex;
-        return orderA - orderB;
+        return (shuffleMap[a.id] ?? 0) - (shuffleMap[b.id] ?? 0);
       }
+      // Default: Original curation order index
       return a.orderIndex - b.orderIndex;
     });
   }, [videos, searchQuery, selectedCategory, favoritesOnly, favoriteIds, currentSort, shuffleMap]);
 
-  // Category Rows Data (for Row Browsing mode)
-  const categoryRowsData = useMemo(() => {
-    const realCategories = CATEGORIES.filter((c) => c !== 'All') as Category[];
-    return realCategories.map((cat) => {
+  // Group videos by category for standard row view
+  const categorizedVideos = useMemo(() => {
+    return CATEGORIES.filter((c) => c !== 'All').map((cat) => {
       const items = videos.filter((v) => v.category === cat);
       return {
         category: cat,
@@ -190,13 +233,32 @@ export function App() {
     setCurrentSort('default');
   };
 
+  // --- Station Dedicated Permalink Route View ---
+  if (routeState.route === 'station') {
+    const station = findStationBySlugOrId(videos, routeState.stationSlug || '');
+    if (station) {
+      return (
+        <StationPermalinkPage
+          video={station}
+          allVideos={videos}
+          isFavorite={isFavorite(station.id)}
+          onToggleFavorite={toggleFavorite}
+          onNavigateHome={navigateToPublic}
+          onNavigateStation={navigateToStation}
+          onSurpriseMe={handleSurpriseMe}
+        />
+      );
+    }
+    return <NotFoundPage onBackToHome={navigateToPublic} />;
+  }
+
   // --- 404 Route View ---
-  if (currentRoute === 'not_found') {
+  if (routeState.route === 'not_found') {
     return <NotFoundPage onBackToHome={navigateToPublic} />;
   }
 
   // --- Admin Route View ---
-  if (currentRoute === 'admin') {
+  if (routeState.route === 'admin') {
     if (!isAuthenticated) {
       return (
         <AdminLogin
@@ -241,6 +303,7 @@ export function App() {
         currentSort={currentSort}
         onSelectSort={setCurrentSort}
         onShuffle={handleShuffle}
+        onSurpriseMe={handleSurpriseMe}
         onOpenAbout={() => setIsAboutOpen(true)}
         onOpenSuggest={() => setIsSuggestOpen(true)}
       />
@@ -255,6 +318,7 @@ export function App() {
         featuredVideos={featuredVideos}
         isFavorite={isFavorite}
         onToggleFavorite={toggleFavorite}
+        onSurpriseMe={handleSurpriseMe}
       />
 
       {/* Sticky Category Jump Bar in Row Browsing Mode */}
@@ -274,7 +338,15 @@ export function App() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-surface-700">
               <div>
                 <h2 className="font-sans font-bold text-xl text-white">
-                  {searchQuery ? `Search results for "${searchQuery}"` : selectedCategory !== 'All' ? selectedCategory : 'Filtered playlist'}
+                  {favoritesOnly
+                    ? searchQuery
+                      ? `Favorites matching "${searchQuery}"`
+                      : 'My Saved Favorites'
+                    : searchQuery
+                    ? `Search results for "${searchQuery}"`
+                    : selectedCategory !== 'All'
+                    ? selectedCategory
+                    : 'Filtered playlist'}
                 </h2>
                 <p className="text-xs text-slate-400 mt-1">
                   Showing <span className="text-accent-400 font-bold font-mono">{processedVideos.length}</span> of {videos.length} feeds
@@ -299,33 +371,44 @@ export function App() {
                     variant="grid"
                     isFavorite={isFavorite(video.id)}
                     onToggleFavorite={toggleFavorite}
+                    onNavigatePermalink={navigateToStation}
                   />
                 ))}
               </div>
             ) : (
               /* Empty Search / Filter State */
               <div className="max-w-md mx-auto py-16 px-4 text-center">
-                <div className="w-12 h-12 rounded-xl bg-surface-850 border border-surface-700 flex items-center justify-center mx-auto mb-4 text-accent-500 font-mono text-base shadow-sm">
-                  {favoritesOnly ? '♥' : '00'}
-                </div>
-                
                 {favoritesOnly && favoritesCount === 0 ? (
                   <>
-                    <h2 className="font-sans font-semibold text-lg text-white">
-                      No favorite feeds saved yet
+                    <div className="w-14 h-14 rounded-2xl bg-accent-500/10 border border-accent-500/30 flex items-center justify-center mx-auto mb-4 text-accent-400 shadow-md">
+                      <Heart className="w-7 h-7 fill-accent-500 text-accent-500" />
+                    </div>
+                    <h2 className="font-sans font-bold text-xl text-white">
+                      No favorite stations saved yet
                     </h2>
-                    <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                      Click the heart icon on any card to save it to your local browser favorites.
+                    <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed max-w-sm mx-auto">
+                      Click the heart (<span className="text-accent-400 font-bold">♥</span>) on any station card or permalink page to pin your favorite soundscapes. Saved privately in your browser without requiring an account.
                     </p>
-                    <button
-                      onClick={() => setFavoritesOnly(false)}
-                      className="mt-5 px-4 py-2 rounded-xl bg-surface-850 hover:bg-surface-800 text-white border border-surface-700 hover:border-surface-600 text-xs font-medium transition-colors cursor-pointer shadow-sm"
-                    >
-                      Show all feeds
-                    </button>
+                    <div className="mt-6 flex items-center justify-center gap-3">
+                      <button
+                        onClick={() => setFavoritesOnly(false)}
+                        className="px-4 py-2.5 rounded-xl bg-accent-500 hover:bg-accent-400 text-surface-950 text-xs font-bold transition-all cursor-pointer shadow-md hover:shadow-accent-500/20"
+                      >
+                        Explore 70 stations
+                      </button>
+                      <button
+                        onClick={handleSurpriseMe}
+                        className="px-4 py-2.5 rounded-xl bg-surface-850 hover:bg-surface-800 text-slate-200 hover:text-white border border-surface-700 hover:border-surface-600 text-xs font-medium transition-all cursor-pointer"
+                      >
+                        🎲 Surprise me
+                      </button>
+                    </div>
                   </>
                 ) : (
                   <>
+                    <div className="w-12 h-12 rounded-xl bg-surface-850 border border-surface-700 flex items-center justify-center mx-auto mb-4 text-accent-500 font-mono text-base shadow-sm">
+                      00
+                    </div>
                     <h2 className="font-sans font-semibold text-lg text-white">
                       No matching audio feeds found
                     </h2>
@@ -348,19 +431,19 @@ export function App() {
         ) : (
           /* VIEW 2: Default Row-Based Category Browsing */
           <div className="space-y-10 sm:space-y-14">
-            {categoryRowsData.map((row) => (
+            {categorizedVideos.map(({ category, videos: catVideos }) => (
               <CategoryRow
-                key={row.category}
-                category={row.category}
-                videos={row.videos}
+                key={category}
+                category={category}
+                videos={catVideos}
                 isFavorite={isFavorite}
                 onToggleFavorite={toggleFavorite}
                 onViewAllCategory={(cat) => setSelectedCategory(cat)}
+                onNavigatePermalink={navigateToStation}
               />
             ))}
           </div>
         )}
-
       </main>
 
       {/* Honest & Transparent Site Footer */}
