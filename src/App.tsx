@@ -19,8 +19,12 @@ import { AboutModal } from './components/AboutModal';
 import { NotFoundPage } from './components/NotFoundPage';
 import { SuggestStationModal } from './components/SuggestStationModal';
 import { StationPermalinkPage } from './components/StationPermalinkPage';
+import { ExportModal } from './components/ExportModal';
 import { SupportSection } from './components/SupportSection';
+import { NewsletterSection } from './components/NewsletterSection';
 import { useSiteSettings } from './hooks/useSiteSettings';
+import { useKeyboardNav } from './hooks/useKeyboardNav';
+import { useReactions } from './hooks/useReactions';
 import { findStationBySlugOrId, getStationSlug } from './utils/slug';
 
 type AppRoute = 'public' | 'admin' | 'station' | 'not_found';
@@ -55,12 +59,17 @@ export function App() {
   const [shuffleMap, setShuffleMap] = useState<Record<string, number>>({});
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
 
   const { favoriteIds, favoritesCount, toggleFavorite, isFavorite } = useFavorites();
   const { isAuthenticated, loading: authLoading, error: authError, login, logout, isSupabaseConfigured } = useAdminAuth();
   const { videos, updateVideo, deleteVideo, addVideo, reorderVideos } = useVideosData();
   const { submissions, submitStation, updateSubmissionStatus, deleteSubmission } = useSubmissions();
   const { settings: siteSettings, isSupportActive } = useSiteSettings();
+  const { addReaction, hasReacted, getReactionCount } = useReactions();
+
+  // Enable arrow-key card navigation & slash shortcut on public catalog
+  useKeyboardNav(routeState.route === 'public' && !isAboutOpen && !isSuggestOpen && !isExportOpen);
 
   const handleApproveSubmission = async (sub: StationSubmission) => {
     const fallbackThumb = CATEGORY_FALLBACK_THUMBNAILS[sub.category] || DEFAULT_FALLBACK_THUMBNAIL;
@@ -249,6 +258,11 @@ export function App() {
           onNavigateHome={navigateToPublic}
           onNavigateStation={navigateToStation}
           onSurpriseMe={handleSurpriseMe}
+          reactionCount={getReactionCount(station.id)}
+          hasReacted={hasReacted(station.id)}
+          onAddReaction={addReaction}
+          getReactionCount={getReactionCount}
+          hasReactedForId={hasReacted}
         />
       );
     }
@@ -309,6 +323,7 @@ export function App() {
         onSurpriseMe={handleSurpriseMe}
         onOpenAbout={() => setIsAboutOpen(true)}
         onOpenSuggest={() => setIsSuggestOpen(true)}
+        onOpenExport={() => setIsExportOpen(true)}
       />
 
       {/* Hero Section with Search Bar, Category Chips, and Spotlight Pick */}
@@ -375,6 +390,9 @@ export function App() {
                     isFavorite={isFavorite(video.id)}
                     onToggleFavorite={toggleFavorite}
                     onNavigatePermalink={navigateToStation}
+                    reactionCount={getReactionCount(video.id)}
+                    hasReacted={hasReacted(video.id)}
+                    onAddReaction={addReaction}
                   />
                 ))}
               </div>
@@ -443,11 +461,17 @@ export function App() {
                 onToggleFavorite={toggleFavorite}
                 onViewAllCategory={(cat) => setSelectedCategory(cat)}
                 onNavigatePermalink={navigateToStation}
+                getReactionCount={getReactionCount}
+                hasReacted={hasReacted}
+                onAddReaction={addReaction}
               />
             ))}
           </div>
         )}
       </main>
+
+      {/* Monthly Newsletter Dispatch Section */}
+      <NewsletterSection />
 
       {/* Admin-Configurable "Support Me" QR Section */}
       <SupportSection
@@ -460,6 +484,7 @@ export function App() {
         totalVideos={videos.length}
         onOpenAbout={() => setIsAboutOpen(true)}
         onOpenSuggest={() => setIsSuggestOpen(true)}
+        onOpenExport={() => setIsExportOpen(true)}
       />
 
       {/* Curation & About Modal */}
@@ -473,6 +498,13 @@ export function App() {
         isOpen={isSuggestOpen}
         onClose={() => setIsSuggestOpen(false)}
         onSubmitStation={submitStation}
+      />
+
+      {/* Export Collection Modal */}
+      <ExportModal
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        videos={videos}
       />
     </div>
   );

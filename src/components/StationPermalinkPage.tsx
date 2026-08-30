@@ -13,6 +13,11 @@ interface StationPermalinkPageProps {
   onNavigateHome: () => void;
   onNavigateStation: (slug: string) => void;
   onSurpriseMe?: () => void;
+  reactionCount?: number;
+  hasReacted?: boolean;
+  onAddReaction?: (id: string) => void;
+  getReactionCount?: (id: string) => number;
+  hasReactedForId?: (id: string) => boolean;
 }
 
 export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
@@ -23,6 +28,11 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
   onNavigateHome,
   onNavigateStation,
   onSurpriseMe,
+  reactionCount = 0,
+  hasReacted = false,
+  onAddReaction,
+  getReactionCount,
+  hasReactedForId,
 }) => {
   const [copied, setCopied] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -158,6 +168,25 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
                 </span>
               </div>
 
+              {/* Flame Reaction Button Floating on Artwork */}
+              {onAddReaction && (
+                <button
+                  type="button"
+                  onClick={() => onAddReaction(video.id)}
+                  disabled={hasReacted}
+                  title={hasReacted ? `You reacted (${reactionCount})` : 'React with 🔥'}
+                  aria-label={hasReacted ? `Reacted (${reactionCount})` : 'React with flame'}
+                  className={`absolute bottom-3 left-3 h-9 px-3 rounded-full flex items-center gap-1.5 backdrop-blur-md transition-all cursor-pointer shadow-md text-xs font-mono font-bold ${
+                    hasReacted
+                      ? 'bg-amber-500/25 text-amber-300 border border-amber-500/50 scale-105 cursor-default'
+                      : 'bg-surface-950/75 text-slate-200 hover:text-amber-400 hover:bg-surface-950/90 border border-white/15'
+                  }`}
+                >
+                  <span className="text-sm">🔥</span>
+                  <span>{reactionCount > 0 ? `${reactionCount} reactions` : 'React'}</span>
+                </button>
+              )}
+
               {/* Heart Favorite Button */}
               <button
                 type="button"
@@ -269,13 +298,16 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
                     variant="grid"
                     isFavorite={false}
                     onToggleFavorite={() => onToggleFavorite(rel.id)}
+                    reactionCount={getReactionCount ? getReactionCount(rel.id) : 0}
+                    hasReacted={hasReactedForId ? hasReactedForId(rel.id) : false}
+                    onAddReaction={onAddReaction}
                   />
                   {/* Overlay button to open related station permalink */}
                   <button
                     onClick={() => onNavigateStation(getStationSlug(rel.title))}
-                    className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded bg-surface-950/85 hover:bg-surface-950 text-[10px] text-slate-300 font-mono border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    className="absolute top-2.5 right-12 z-10 px-2 py-0.5 rounded bg-surface-950/85 hover:bg-surface-950 text-[10px] text-slate-300 font-mono border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                   >
-                    View details &rarr;
+                    Details &rarr;
                   </button>
                 </div>
               ))}

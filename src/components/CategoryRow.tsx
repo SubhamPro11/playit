@@ -11,6 +11,9 @@ interface CategoryRowProps {
   onToggleFavorite: (id: string) => void;
   onViewAllCategory: (category: Category) => void;
   onNavigatePermalink?: (slug: string) => void;
+  getReactionCount?: (id: string) => number;
+  hasReacted?: (id: string) => boolean;
+  onAddReaction?: (id: string) => void;
 }
 
 export const CategoryRow: React.FC<CategoryRowProps> = ({
@@ -20,6 +23,9 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({
   onToggleFavorite,
   onViewAllCategory,
   onNavigatePermalink,
+  getReactionCount,
+  hasReacted,
+  onAddReaction,
 }) => {
   const rowRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -129,6 +135,9 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({
                 isFavorite={isFavorite(video.id)}
                 onToggleFavorite={onToggleFavorite}
                 onNavigatePermalink={onNavigatePermalink}
+                reactionCount={getReactionCount ? getReactionCount(video.id) : 0}
+                hasReacted={hasReacted ? hasReacted(video.id) : false}
+                onAddReaction={onAddReaction}
               />
             </div>
           ))}

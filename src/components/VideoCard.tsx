@@ -9,6 +9,9 @@ interface VideoCardProps {
   onToggleFavorite: (id: string) => void;
   onNavigatePermalink?: (slug: string) => void;
   variant?: 'grid' | 'row';
+  reactionCount?: number;
+  hasReacted?: boolean;
+  onAddReaction?: (id: string) => void;
 }
 
 export const VideoCard: React.FC<VideoCardProps> = ({
@@ -17,6 +20,9 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   onToggleFavorite,
   onNavigatePermalink,
   variant = 'row',
+  reactionCount = 0,
+  hasReacted = false,
+  onAddReaction,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(() => getEffectiveThumbnailUrl(video));
@@ -35,6 +41,14 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     e.preventDefault();
     e.stopPropagation();
     onToggleFavorite(video.id);
+  };
+
+  const handleReactionClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onAddReaction) {
+      onAddReaction(video.id);
+    }
   };
 
   const handleDetailsClick = (e: React.MouseEvent) => {
@@ -58,12 +72,13 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   return (
     <a
       id={`track-${video.id}`}
+      data-station-card
       href={video.externalLink}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`Open ${video.title} on ${domain} in a new tab`}
       title={`Open ${video.title} on ${domain} (opens in new tab)`}
-      className="group flex flex-col bg-surface-850 hover:bg-surface-800 rounded-xl border border-surface-700 hover:border-surface-600 focus-visible:border-accent-500 transition-all duration-200 overflow-hidden relative shadow-sm hover:shadow-md h-full cursor-pointer"
+      className="group flex flex-col bg-surface-850 hover:bg-surface-800 rounded-xl border border-surface-700 hover:border-surface-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-900 transition-all duration-200 overflow-hidden relative shadow-sm hover:shadow-md h-full cursor-pointer"
     >
       {/* 16:9 Thumbnail Viewport */}
       <div className="relative aspect-video w-full overflow-hidden bg-surface-950 border-b border-surface-700">
@@ -88,6 +103,25 @@ export const VideoCard: React.FC<VideoCardProps> = ({
               {video.category}
             </span>
           </div>
+        )}
+
+        {/* Flame Reaction Button */}
+        {onAddReaction && (
+          <button
+            type="button"
+            onClick={handleReactionClick}
+            disabled={hasReacted}
+            title={hasReacted ? `You reacted (${reactionCount})` : 'React with 🔥'}
+            aria-label={hasReacted ? `Reacted (${reactionCount})` : 'React with flame'}
+            className={`absolute top-2.5 left-2.5 h-8 px-2.5 rounded-full flex items-center gap-1 backdrop-blur-md transition-all cursor-pointer z-10 shadow-sm text-xs font-mono font-bold ${
+              hasReacted
+                ? 'bg-amber-500/25 text-amber-300 border border-amber-500/50 scale-105 cursor-default'
+                : 'bg-surface-950/70 text-slate-300 hover:text-amber-400 hover:bg-surface-950/90 border border-white/10 opacity-85 group-hover:opacity-100'
+            }`}
+          >
+            <span>🔥</span>
+            {reactionCount > 0 && <span>{reactionCount}</span>}
+          </button>
         )}
 
         {/* Favorite Heart Button */}

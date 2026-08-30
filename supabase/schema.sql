@@ -114,3 +114,65 @@ ON public.station_submissions FOR ALL
 USING (true)
 WITH CHECK (true);
 
+-- =========================================================
+-- 5. Create the `station_reactions` table for visitor station reactions
+-- =========================================================
+CREATE TABLE IF NOT EXISTS public.station_reactions (
+    station_id TEXT PRIMARY KEY,
+    count INTEGER DEFAULT 0 NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.station_reactions ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can read station reactions" ON public.station_reactions;
+CREATE POLICY "Public can read station reactions" 
+ON public.station_reactions FOR SELECT 
+USING (true);
+
+DROP POLICY IF EXISTS "Public can insert or update station reactions" ON public.station_reactions;
+CREATE POLICY "Public can insert or update station reactions" 
+ON public.station_reactions FOR ALL 
+USING (true)
+WITH CHECK (true);
+
+-- Atomic reaction increment helper function
+CREATE OR REPLACE FUNCTION increment_reaction(target_station_id TEXT)
+RETURNS INTEGER AS $$
+DECLARE
+    new_count INTEGER;
+BEGIN
+    INSERT INTO public.station_reactions (station_id, count, updated_at)
+    VALUES (target_station_id, 1, timezone('utc'::text, now()))
+    ON CONFLICT (station_id)
+    DO UPDATE SET count = station_reactions.count + 1, updated_at = timezone('utc'::text, now())
+    RETURNING count INTO new_count;
+    RETURN new_count;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- =========================================================
+-- 6. Create the `email_subscribers` table for newsletter digest
+-- =========================================================
+CREATE TABLE IF NOT EXISTS public.email_subscribers (
+    id TEXT PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    status TEXT DEFAULT 'active' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.email_subscribers ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can subscribe email" ON public.email_subscribers;
+CREATE POLICY "Public can subscribe email" 
+ON public.email_subscribers FOR INSERT 
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Admins can view and manage subscribers" ON public.email_subscribers;
+CREATE POLICY "Admins can view and manage subscribers" 
+ON public.email_subscribers FOR ALL 
+USING (true)
+WITH CHECK (true);
+
+
+
