@@ -21,7 +21,7 @@ export const BrandLogo: React.FC = () => {
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5 leading-none">
           <span className="font-sans font-bold text-lg sm:text-xl tracking-tight text-white group-hover:text-accent-400 transition-colors">
-            PLAYIT
+            AIRWAVES
           </span>
           <span className="w-1.5 h-1.5 rounded-full bg-accent-500"></span>
         </div>

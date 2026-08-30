@@ -35,8 +35,8 @@
   <g transform="translate(100, 100)">
     <rect width="72" height="72" rx="20" fill="#151722" stroke="#f59e0b" stroke-width="2" stroke-opacity="0.6"/>
     <path d="M28 22v28l22-14z" fill="#f59e0b"/>
-    <text x="96" y="44" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="34" font-weight="800" letter-spacing="-0.02em">PLAYIT</text>
-    <circle cx="230" cy="38" r="4" fill="#f59e0b"/>
+    <text x="96" y="44" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="34" font-weight="800" letter-spacing="-0.02em">AIRWAVES</text>
+    <circle cx="290" cy="38" r="4" fill="#f59e0b"/>
     <text x="96" y="66" fill="#94a3b8" font-family="'JetBrains Mono', monospace, sans-serif" font-size="14" font-weight="600" letter-spacing="0.1em">CURATED SOUNDSCAPES &amp; WEB RADIO</text>
   </g>
 

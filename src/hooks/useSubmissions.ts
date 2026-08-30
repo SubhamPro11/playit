@@ -2,12 +2,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { StationSubmission } from '../types/video';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
-const LOCAL_STORAGE_SUBMISSIONS_KEY = 'playit_pending_submissions_v1';
+const LOCAL_STORAGE_SUBMISSIONS_KEY = 'airwaves_pending_submissions_v1';
+const LEGACY_STORAGE_SUBMISSIONS_KEY = 'playit_pending_submissions_v1';
 
 export function useSubmissions() {
   const [submissions, setSubmissions] = useState<StationSubmission[]>(() => {
     try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_SUBMISSIONS_KEY);
+      const saved =
+        localStorage.getItem(LOCAL_STORAGE_SUBMISSIONS_KEY) ||
+        localStorage.getItem(LEGACY_STORAGE_SUBMISSIONS_KEY);
       if (saved) return JSON.parse(saved);
     } catch {
       // ignore

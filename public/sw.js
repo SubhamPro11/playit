@@ -1,4 +1,4 @@
-const CACHE_NAME = 'playit-cache-v1';
+const CACHE_NAME = 'airwaves-cache-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

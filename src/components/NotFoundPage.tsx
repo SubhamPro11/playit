@@ -61,7 +61,7 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({ onBackToHome }) => {
 
       {/* Minimal Footer */}
       <footer className="border-t border-surface-700 bg-surface-950 py-6 px-4 text-center text-xs text-slate-500 font-mono">
-        PlayIt · Curated Independent Audio &amp; Web Radio
+        Airwaves · Curated Independent Audio &amp; Web Radio
       </footer>
     </div>
   );

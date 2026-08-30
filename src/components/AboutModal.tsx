@@ -61,7 +61,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
           </div>
           <div>
             <h2 id="about-modal-title" className="font-sans font-bold text-xl sm:text-2xl text-white">
-              About PlayIt
+              About Airwaves
             </h2>
             <p className="text-xs text-accent-400 font-mono tracking-wide uppercase mt-0.5">
               An open, human-curated audio directory
@@ -75,7 +75,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
             Modern music and audio streaming has become dominated by algorithmic recommendations designed to maximize watch-time and ad impressions rather than discovery.
           </p>
           <p>
-            <strong className="text-white">PlayIt</strong> is an intentional counterweight: a single, curated collection of 70 independent web radio stations, ambient soundscape projects, long-distance highway bus mixtapes, retro television audio, and regional folk music from across India and beyond.
+            <strong className="text-white">Airwaves</strong> is an intentional counterweight: a single, curated collection of 70 independent web radio stations, ambient soundscape projects, long-distance highway bus mixtapes, retro television audio, and regional folk music from across India and beyond.
           </p>
 
           {/* Guiding Principles */}
@@ -106,7 +106,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
                 <span>No Ads or Trackers</span>
               </div>
               <p className="text-xs text-slate-400 leading-normal">
-                PlayIt contains zero advertisement tracking scripts, zero sponsored rankings, and stores your favorites locally on your device.
+                Airwaves contains zero advertisement tracking scripts, zero sponsored rankings, and stores your favorites locally on your device.
               </p>
             </div>
 

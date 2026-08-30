@@ -1,4 +1,4 @@
-# PlayIt robots.txt
+# Airwaves robots.txt
 User-agent: *
 Allow: /
 Disallow: /admin

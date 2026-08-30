@@ -21,7 +21,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('[PlayIt Error Boundary Caught Error]:', error, errorInfo);
+    console.error('[Airwaves Error Boundary Caught Error]:', error, errorInfo);
   }
 
   private handleReload = () => {
@@ -46,7 +46,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-400 mt-2.5 leading-relaxed">
-              PlayIt encountered an unexpected runtime issue. Reloading the page will restore normal directory playback.
+              Airwaves encountered an unexpected runtime issue. Reloading the page will restore normal directory playback.
             </p>
 
             <button
@@ -55,7 +55,7 @@ export class ErrorBoundary extends Component<Props, State> {
               className="mt-6 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-accent-500 hover:bg-accent-400 text-surface-950 font-semibold text-xs transition-all shadow-sm cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
-              <span>Reload PlayIt</span>
+              <span>Reload Airwaves</span>
             </button>
           </div>
         </div>

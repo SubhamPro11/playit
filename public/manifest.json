@@ -1,6 +1,6 @@
 {
-  "name": "PlayIt — Curated Audio & Web Radio",
-  "short_name": "PlayIt",
+  "name": "Airwaves — Curated Audio & Web Radio",
+  "short_name": "Airwaves",
   "description": "A curated single-playlist showcase of 70 independent web radio, audio playlists, and soundscape projects.",
   "start_url": "/",
   "scope": "/",

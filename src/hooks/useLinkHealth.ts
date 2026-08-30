@@ -1,12 +1,14 @@
 import { useState, useCallback } from 'react';
 import { Video, LinkHealthReport, HealthStatusType } from '../types/video';
 
-const STORAGE_KEY = 'playit_link_health';
+const STORAGE_KEY = 'airwaves_link_health';
+const LEGACY_STORAGE_KEY = 'playit_link_health';
 
 export function useLinkHealth() {
   const [healthMap, setHealthMap] = useState<Record<string, LinkHealthReport>>(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored =
+        localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
       return stored ? JSON.parse(stored) : {};
     } catch {
       return {};

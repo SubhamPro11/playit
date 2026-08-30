@@ -96,7 +96,7 @@ function generatePrerenderedHTML() {
       <div style="max-width:80rem; margin:0 auto; display:flex; justify-content:space-between; align-items:center;">
         <div style="font-weight:800; font-size:1.25rem; color:#fff; display:flex; align-items:center; gap:0.5rem;">
           <span style="width:10px; height:10px; border-radius:50%; background:#ef4444; display:inline-block;"></span>
-          <span>PlayIt</span>
+          <span>Airwaves</span>
         </div>
         <span style="font-family:monospace; font-size:0.75rem; color:#a1a1aa; background:#141418; border:1px solid #27272a; padding:0.5rem 0.875rem; border-radius:0.75rem;">70 feeds</span>
       </div>
@@ -116,9 +116,9 @@ function generatePrerenderedHTML() {
 
     <footer style="border-top:1px solid #26262a; background:#08080a; color:#a1a1aa; padding:3rem 1.5rem; margin-top:4rem;">
       <div style="max-width:80rem; margin:0 auto;">
-        <h4 style="color:#fff; font-size:1rem; margin:0 0 0.5rem 0;">PLAYIT</h4>
+        <h4 style="color:#fff; font-size:1rem; margin:0 0 0.5rem 0;">AIRWAVES</h4>
         <p style="font-size:0.875rem; max-width:32rem; line-height:1.5;">A single, human-curated playlist indexing 70 independent audio projects, web radios, highway travel soundscapes, and regional folk music from across India.</p>
-        <p style="font-family:monospace; font-size:0.75rem; color:#71717a; margin-top:1rem;">PlayIt · 70 independent audio websites · No algorithms · Zero ads</p>
+        <p style="font-family:monospace; font-size:0.75rem; color:#71717a; margin-top:1rem;">Airwaves · 70 independent audio websites · No algorithms · Zero ads</p>
       </div>
     </footer>
   `.trim();

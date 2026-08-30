@@ -19,6 +19,8 @@ import { AboutModal } from './components/AboutModal';
 import { NotFoundPage } from './components/NotFoundPage';
 import { SuggestStationModal } from './components/SuggestStationModal';
 import { StationPermalinkPage } from './components/StationPermalinkPage';
+import { SupportSection } from './components/SupportSection';
+import { useSiteSettings } from './hooks/useSiteSettings';
 import { findStationBySlugOrId, getStationSlug } from './utils/slug';
 
 type AppRoute = 'public' | 'admin' | 'station' | 'not_found';
@@ -58,6 +60,7 @@ export function App() {
   const { isAuthenticated, loading: authLoading, error: authError, login, logout, isSupabaseConfigured } = useAdminAuth();
   const { videos, updateVideo, deleteVideo, addVideo, reorderVideos } = useVideosData();
   const { submissions, submitStation, updateSubmissionStatus, deleteSubmission } = useSubmissions();
+  const { settings: siteSettings, isSupportActive } = useSiteSettings();
 
   const handleApproveSubmission = async (sub: StationSubmission) => {
     const fallbackThumb = CATEGORY_FALLBACK_THUMBNAILS[sub.category] || DEFAULT_FALLBACK_THUMBNAIL;
@@ -445,6 +448,12 @@ export function App() {
           </div>
         )}
       </main>
+
+      {/* Admin-Configurable "Support Me" QR Section */}
+      <SupportSection
+        settings={siteSettings}
+        isActive={isSupportActive}
+      />
 
       {/* Honest & Transparent Site Footer */}
       <SiteFooter

@@ -1,12 +1,14 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, LogOut, ExternalLink, Search, CheckCircle2, AlertTriangle, Inbox, Check, XCircle, Activity, RefreshCw } from 'lucide-react';
+import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, LogOut, ExternalLink, Search, CheckCircle2, AlertTriangle, Inbox, Check, XCircle, Activity, RefreshCw, Heart } from 'lucide-react';
 import { Video, StationSubmission } from '../../types/video';
 import { CATEGORIES, Category } from '../../data/playlist';
 import { EditVideoModal } from './EditVideoModal';
 import { AddVideoModal } from './AddVideoModal';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
+import { SupportSettingsPanel } from './SupportSettingsPanel';
 import { BrandLogo } from '../BrandLogo';
 import { useLinkHealth } from '../../hooks/useLinkHealth';
+import { useSiteSettings } from '../../hooks/useSiteSettings';
 
 interface AdminDashboardProps {
   videos: Video[];
@@ -37,10 +39,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onLogout,
   onViewPublicSite,
 }) => {
-  const [activeTab, setActiveTab] = useState<'entries' | 'submissions'>('entries');
+  const [activeTab, setActiveTab] = useState<'entries' | 'submissions' | 'support'>('entries');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Site Settings / Support QR Code State
+  const {
+    settings: siteSettings,
+    isSupportActive,
+    updateSettings: updateSiteSettings,
+    clearSupportQr,
+  } = useSiteSettings();
   
   // Modals state
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
@@ -272,6 +282,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <span className="px-1.5 py-0.5 rounded-full bg-amber-400 text-surface-950 font-mono text-[10px] font-bold">
                 {pendingSubmissionsCount} new
               </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('support')}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'support'
+                ? 'bg-accent-500 text-surface-950 font-bold shadow-sm'
+                : 'bg-surface-850 text-slate-400 hover:text-white border border-surface-700 hover:border-surface-600'
+            }`}
+          >
+            <Heart className={`w-3.5 h-3.5 ${activeTab === 'support' ? 'fill-surface-950 text-surface-950' : 'text-accent-400'}`} />
+            <span>Support Me / QR</span>
+            {isSupportActive && (
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             )}
           </button>
         </div>
@@ -570,7 +596,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
             </div>
           </>
-        ) : (
+        ) : activeTab === 'submissions' ? (
           /* Submissions Moderation Tab */
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-surface-700">
@@ -708,6 +734,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
             </div>
           </div>
+        ) : (
+          /* Support Me & QR Code Settings Tab */
+          <SupportSettingsPanel
+            settings={siteSettings}
+            onSaveSettings={updateSiteSettings}
+            onClearQr={clearSupportQr}
+          />
         )}
 
       </main>

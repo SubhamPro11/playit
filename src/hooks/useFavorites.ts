@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const STORAGE_KEY = 'playit_favorites';
-const LEGACY_STORAGE_KEY = 'max_playlist_favs_v2';
+const STORAGE_KEY = 'airwaves_favorites';
+const LEGACY_STORAGE_KEYS = ['playit_favorites', 'max_playlist_favs_v2'];
 
 export function useFavorites() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
+      const stored =
+        localStorage.getItem(STORAGE_KEY) ||
+        localStorage.getItem(LEGACY_STORAGE_KEYS[0]) ||
+        localStorage.getItem(LEGACY_STORAGE_KEYS[1]);
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];

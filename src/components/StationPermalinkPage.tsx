@@ -36,7 +36,7 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
   // Dynamic SEO meta tags per station
   useEffect(() => {
     const originalTitle = document.title;
-    document.title = `${video.title} — PlayIt Curated Audio Showcase`;
+    document.title = `${video.title} — Airwaves Curated Audio Showcase`;
 
     // Update description meta tag
     const metaDesc = document.querySelector('meta[name="description"]');
@@ -44,7 +44,7 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
     if (metaDesc) {
       metaDesc.setAttribute(
         'content',
-        `Listen to ${video.title} (${domain}), curated in ${video.category} on PlayIt. Independent web radio, ambient soundscapes, and regional audio.`
+        `Listen to ${video.title} (${domain}), curated in ${video.category} on Airwaves. Independent web radio, ambient soundscapes, and regional audio.`
       );
     }
 
@@ -221,7 +221,7 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
 
               <div className="p-4 rounded-xl bg-surface-900 border border-surface-700/80 mb-6 text-xs sm:text-sm text-slate-300 leading-relaxed">
                 <p>
-                  This station is part of the PlayIt curated index of 70 independent web radio and audio environments. Audio plays directly from the creator&apos;s live site in a new browser tab.
+                  This station is part of the Airwaves curated index of 70 independent web radio and audio environments. Audio plays directly from the creator&apos;s live site in a new browser tab.
                 </p>
               </div>
             </div>
@@ -286,7 +286,7 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
 
       {/* Footer */}
       <footer className="border-t border-surface-700 bg-surface-950 py-8 px-4 text-center text-xs text-slate-500 font-mono">
-        <p>PlayIt — Curated single-playlist index • No algorithms • Zero ads</p>
+        <p>Airwaves — Curated single-playlist index • No algorithms • Zero ads</p>
       </footer>
     </div>
   );

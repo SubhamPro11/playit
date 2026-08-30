@@ -1,5 +1,5 @@
 -- =========================================================
--- Max Playlist / PlayIt — Database & Storage Setup
+-- Airwaves — Database & Storage Setup
 -- Run this in your Supabase SQL Editor (project: ihnpawujrjxchlvopbwb)
 -- =========================================================
 
@@ -65,3 +65,52 @@ DROP POLICY IF EXISTS "Public can update thumbnails" ON storage.objects;
 CREATE POLICY "Public can update thumbnails" 
 ON storage.objects FOR UPDATE 
 USING (bucket_id = 'thumbnails');
+
+-- =========================================================
+-- 3. Create the `site_settings` table for Curator QR and dynamic site configuration
+-- =========================================================
+CREATE TABLE IF NOT EXISTS public.site_settings (
+    key TEXT PRIMARY KEY,
+    value JSONB NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can read site settings" ON public.site_settings;
+CREATE POLICY "Public can read site settings" 
+ON public.site_settings FOR SELECT 
+USING (true);
+
+DROP POLICY IF EXISTS "Anyone with app can update site settings" ON public.site_settings;
+CREATE POLICY "Anyone with app can update site settings" 
+ON public.site_settings FOR ALL 
+USING (true)
+WITH CHECK (true);
+
+-- =========================================================
+-- 4. Create the `station_submissions` table for visitor suggestions
+-- =========================================================
+CREATE TABLE IF NOT EXISTS public.station_submissions (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    url TEXT NOT NULL,
+    category TEXT NOT NULL,
+    notes TEXT,
+    status TEXT DEFAULT 'pending' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.station_submissions ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can insert station submissions" ON public.station_submissions;
+CREATE POLICY "Public can insert station submissions" 
+ON public.station_submissions FOR INSERT 
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Admins can view and manage station submissions" ON public.station_submissions;
+CREATE POLICY "Admins can view and manage station submissions" 
+ON public.station_submissions FOR ALL 
+USING (true)
+WITH CHECK (true);
+
