@@ -15,6 +15,8 @@ interface PlaylistHeaderProps {
   currentSort: SortOption;
   onSelectSort: (sort: SortOption) => void;
   onShuffle: () => void;
+  onOpenAbout?: () => void;
+  onOpenSuggest?: () => void;
 }
 
 export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
@@ -27,6 +29,8 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
   currentSort,
   onSelectSort,
   onShuffle,
+  onOpenAbout,
+  onOpenSuggest,
 }) => {
   const isFiltered = selectedCategory !== 'All' || favoritesOnly;
 
@@ -40,6 +44,28 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
         {/* Controls Toolbar */}
         <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap justify-end">
           
+          {/* Suggest Station Button */}
+          {onOpenSuggest && (
+            <button
+              type="button"
+              onClick={onOpenSuggest}
+              className="px-3 py-1.5 sm:py-2 rounded-xl text-xs font-medium text-accent-400 hover:text-accent-300 bg-surface-850 hover:bg-surface-800 border border-surface-700 hover:border-accent-500/50 transition-all cursor-pointer hidden sm:inline-block"
+            >
+              + Suggest
+            </button>
+          )}
+
+          {/* About Project Button */}
+          {onOpenAbout && (
+            <button
+              type="button"
+              onClick={onOpenAbout}
+              className="px-3 py-1.5 sm:py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-surface-850 hover:bg-surface-800 border border-surface-700 hover:border-surface-600 transition-all cursor-pointer"
+            >
+              About
+            </button>
+          )}
+
           {/* Sort Dropdown */}
           <SortControl
             currentSort={currentSort}

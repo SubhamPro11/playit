@@ -3,9 +3,11 @@ import { CATEGORIES } from '../data/playlist';
 
 interface SiteFooterProps {
   totalVideos: number;
+  onOpenAbout?: () => void;
+  onOpenSuggest?: () => void;
 }
 
-export const SiteFooter: React.FC<SiteFooterProps> = ({ totalVideos }) => {
+export const SiteFooter: React.FC<SiteFooterProps> = ({ totalVideos, onOpenAbout, onOpenSuggest }) => {
   const realCategoriesCount = CATEGORIES.filter((c) => c !== 'All').length;
 
   return (
@@ -23,9 +25,26 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ totalVideos }) => {
           <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-md">
             A single, human-curated playlist indexing independent audio projects, web radios, highway travel soundscapes, and regional folk music from across India.
           </p>
-          <p className="text-xs text-slate-400 mt-3">
-            Clicking any card opens the original creator&apos;s live web link in a new tab.
-          </p>
+          <div className="mt-3 flex items-center gap-4 flex-wrap">
+            {onOpenAbout && (
+              <button
+                type="button"
+                onClick={onOpenAbout}
+                className="text-xs text-accent-400 hover:text-accent-300 font-medium underline underline-offset-4 cursor-pointer"
+              >
+                Curation manifesto &rarr;
+              </button>
+            )}
+            {onOpenSuggest && (
+              <button
+                type="button"
+                onClick={onOpenSuggest}
+                className="text-xs text-slate-300 hover:text-white font-medium underline underline-offset-4 cursor-pointer"
+              >
+                Suggest a station &rarr;
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Col 2: Real Index Metrics */}

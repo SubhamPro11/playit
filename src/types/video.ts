@@ -37,3 +37,14 @@ export function getEffectiveThumbnailUrl(video: Partial<Video>): string {
   return DEFAULT_FALLBACK_THUMBNAIL;
 }
 
+export interface StationSubmission {
+  id: string;
+  name: string;
+  url: string;
+  category: string;
+  notes?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+}
+
+

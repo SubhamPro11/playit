@@ -11,6 +11,15 @@
   Cache-Control: public, max-age=86400
   Content-Type: application/xml; charset=utf-8
 
+# Service Worker & Manifest
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+  Service-Worker-Allowed: /
+
+/manifest.json
+  Cache-Control: public, max-age=86400
+  Content-Type: application/manifest+json; charset=utf-8
+
 # Security & Best Practice Headers for all routes
 /*
   X-Content-Type-Options: nosniff

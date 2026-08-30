@@ -7,26 +7,62 @@ import { VideoCard } from './components/VideoCard';
 import { CategoryRow } from './components/CategoryRow';
 import { SiteFooter } from './components/SiteFooter';
 import { SortOption } from './components/SortControl';
+import { StationSubmission, CATEGORY_FALLBACK_THUMBNAILS, DEFAULT_FALLBACK_THUMBNAIL } from './types/video';
 import { useFavorites } from './hooks/useFavorites';
 import { useAdminAuth } from './hooks/useAdminAuth';
 import { useVideosData } from './hooks/useVideosData';
+import { useSubmissions } from './hooks/useSubmissions';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { AboutModal } from './components/AboutModal';
+import { NotFoundPage } from './components/NotFoundPage';
+import { SuggestStationModal } from './components/SuggestStationModal';
+
+type AppRoute = 'public' | 'admin' | 'not_found';
+
+function getInitialRoute(): AppRoute {
+  const path = window.location.pathname;
+  if (path.startsWith('/admin') || window.location.hash === '#admin') {
+    return 'admin';
+  }
+  if (path === '/' || path === '/index.html' || path === '') {
+    return 'public';
+  }
+  return 'not_found';
+}
 
 export function App() {
-  const [isAdminRoute, setIsAdminRoute] = useState<boolean>(() => {
-    return window.location.pathname.startsWith('/admin') || window.location.hash === '#admin';
-  });
+  const [currentRoute, setCurrentRoute] = useState<AppRoute>(getInitialRoute);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
   const [currentSort, setCurrentSort] = useState<SortOption>('default');
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [shuffleMap, setShuffleMap] = useState<Record<string, number>>({});
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isSuggestOpen, setIsSuggestOpen] = useState(false);
 
   const { favoriteIds, favoritesCount, toggleFavorite, isFavorite } = useFavorites();
   const { isAuthenticated, loading: authLoading, error: authError, login, logout, isSupabaseConfigured } = useAdminAuth();
   const { videos, updateVideo, deleteVideo, addVideo, reorderVideos } = useVideosData();
+  const { submissions, submitStation, updateSubmissionStatus, deleteSubmission } = useSubmissions();
+
+  const handleApproveSubmission = async (sub: StationSubmission) => {
+    const fallbackThumb = CATEGORY_FALLBACK_THUMBNAILS[sub.category] || DEFAULT_FALLBACK_THUMBNAIL;
+    const ok = await addVideo({
+      orderIndex: videos.length + 1,
+      title: sub.name,
+      externalLink: sub.url,
+      thumbnailUrl: fallbackThumb,
+      category: sub.category as Category,
+      accentColor: '#f59e0b',
+    });
+    if (ok) {
+      await updateSubmissionStatus(sub.id, 'approved');
+      return true;
+    }
+    return false;
+  };
 
   // Pick 5 representative featured items for hero spotlight
   const featuredVideos = useMemo(() => {
@@ -38,9 +74,7 @@ export function App() {
   // Listen to browser navigation (popstate/hashchange)
   useEffect(() => {
     const handleRouteChange = () => {
-      setIsAdminRoute(
-        window.location.pathname.startsWith('/admin') || window.location.hash === '#admin'
-      );
+      setCurrentRoute(getInitialRoute());
     };
 
     window.addEventListener('popstate', handleRouteChange);
@@ -53,7 +87,7 @@ export function App() {
 
   const navigateToPublic = () => {
     window.history.pushState({}, '', '/');
-    setIsAdminRoute(false);
+    setCurrentRoute('public');
   };
 
   // Trigger new random shuffle ordering on click
@@ -156,8 +190,13 @@ export function App() {
     setCurrentSort('default');
   };
 
+  // --- 404 Route View ---
+  if (currentRoute === 'not_found') {
+    return <NotFoundPage onBackToHome={navigateToPublic} />;
+  }
+
   // --- Admin Route View ---
-  if (isAdminRoute) {
+  if (currentRoute === 'admin') {
     if (!isAuthenticated) {
       return (
         <AdminLogin
@@ -173,11 +212,15 @@ export function App() {
     return (
       <AdminDashboard
         videos={videos}
+        submissions={submissions}
         isSupabaseConfigured={isSupabaseConfigured}
         onUpdateVideo={updateVideo}
         onDeleteVideo={deleteVideo}
         onAddVideo={addVideo}
         onReorderVideos={reorderVideos}
+        onApproveSubmission={handleApproveSubmission}
+        onRejectSubmission={(id) => updateSubmissionStatus(id, 'rejected')}
+        onDeleteSubmission={deleteSubmission}
         onLogout={logout}
         onViewPublicSite={navigateToPublic}
       />
@@ -187,7 +230,7 @@ export function App() {
   // --- Public Single Playlist View ---
   return (
     <div className="min-h-screen flex flex-col bg-surface-900 text-slate-200 font-sans">
-      {/* Sticky Header with Brand Logo and Controls (No Category Chips in Header) */}
+      {/* Sticky Header with Brand Logo and Controls */}
       <PlaylistHeader
         totalItems={videos.length}
         filteredItemsCount={processedVideos.length}
@@ -198,13 +241,17 @@ export function App() {
         currentSort={currentSort}
         onSelectSort={setCurrentSort}
         onShuffle={handleShuffle}
+        onOpenAbout={() => setIsAboutOpen(true)}
+        onOpenSuggest={() => setIsSuggestOpen(true)}
       />
 
-      {/* Hero Section with Search Bar and Spotlight Pick */}
+      {/* Hero Section with Search Bar, Category Chips, and Spotlight Pick */}
       <HeroSection
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onClearSearch={() => setSearchQuery('')}
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
         featuredVideos={featuredVideos}
         isFavorite={isFavorite}
         onToggleFavorite={toggleFavorite}
@@ -317,7 +364,24 @@ export function App() {
       </main>
 
       {/* Honest & Transparent Site Footer */}
-      <SiteFooter totalVideos={videos.length} />
+      <SiteFooter
+        totalVideos={videos.length}
+        onOpenAbout={() => setIsAboutOpen(true)}
+        onOpenSuggest={() => setIsSuggestOpen(true)}
+      />
+
+      {/* Curation & About Modal */}
+      <AboutModal
+        isOpen={isAboutOpen}
+        onClose={() => setIsAboutOpen(false)}
+      />
+
+      {/* Suggest Station Modal */}
+      <SuggestStationModal
+        isOpen={isSuggestOpen}
+        onClose={() => setIsSuggestOpen(false)}
+        onSubmitStation={submitStation}
+      />
     </div>
   );
 }

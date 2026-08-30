@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="bgGlow" cx="75%" cy="25%" r="60%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#090a0f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#181a24"/>
+      <stop offset="100%" stop-color="#0f1118"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#090a0f"/>
+  <rect width="1200" height="630" fill="url(#bgGlow)"/>
+
+  <!-- Subtle Grid Pattern -->
+  <g stroke="#ffffff" stroke-opacity="0.03" stroke-width="1">
+    <line x1="100" y1="0" x2="100" y2="630"/>
+    <line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="500" y1="0" x2="500" y2="630"/>
+    <line x1="700" y1="0" x2="700" y2="630"/>
+    <line x1="900" y1="0" x2="900" y2="630"/>
+    <line x1="1100" y1="0" x2="1100" y2="630"/>
+    <line x1="0" y1="100" x2="1200" y2="100"/>
+    <line x1="0" y1="250" x2="1200" y2="250"/>
+    <line x1="0" y1="400" x2="1200" y2="400"/>
+    <line x1="0" y1="550" x2="1200" y2="550"/>
+  </g>
+
+  <!-- Border -->
+  <rect x="24" y="24" width="1152" height="582" rx="24" fill="none" stroke="#262838" stroke-width="2"/>
+
+  <!-- Logo Emblem -->
+  <g transform="translate(100, 100)">
+    <rect width="72" height="72" rx="20" fill="#151722" stroke="#f59e0b" stroke-width="2" stroke-opacity="0.6"/>
+    <path d="M28 22v28l22-14z" fill="#f59e0b"/>
+    <text x="96" y="44" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="34" font-weight="800" letter-spacing="-0.02em">PLAYIT</text>
+    <circle cx="230" cy="38" r="4" fill="#f59e0b"/>
+    <text x="96" y="66" fill="#94a3b8" font-family="'JetBrains Mono', monospace, sans-serif" font-size="14" font-weight="600" letter-spacing="0.1em">CURATED SOUNDSCAPES &amp; WEB RADIO</text>
+  </g>
+
+  <!-- Headline -->
+  <text x="100" y="270" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="56" font-weight="800" letter-spacing="-0.03em">
+    Discover 70 independent
+  </text>
+  <text x="100" y="340" fill="#f59e0b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="56" font-weight="800" letter-spacing="-0.03em">
+    audio worlds &amp; radio streams.
+  </text>
+
+  <!-- Subtitle -->
+  <text x="100" y="415" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="400">
+    A single human-curated playlist indexing web radios, ambient soundscapes,
+  </text>
+  <text x="100" y="450" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="400">
+    highway mixtapes, and cultural music projects from across India.
+  </text>
+
+  <!-- Feature Pills Footer -->
+  <g transform="translate(100, 505)">
+    <!-- Pill 1 -->
+    <rect x="0" y="0" width="170" height="42" rx="12" fill="#151722" stroke="#262838" stroke-width="1.5"/>
+    <text x="20" y="26" fill="#f59e0b" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="700">70 STATIONS</text>
+
+    <!-- Pill 2 -->
+    <rect x="185" y="0" width="180" height="42" rx="12" fill="#151722" stroke="#262838" stroke-width="1.5"/>
+    <text x="205" y="26" fill="#e2e8f0" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="600">NO ALGORITHMS</text>
+
+    <!-- Pill 3 -->
+    <rect x="380" y="0" width="130" height="42" rx="12" fill="#151722" stroke="#262838" stroke-width="1.5"/>
+    <text x="400" y="26" fill="#e2e8f0" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="600">ZERO ADS</text>
+
+    <!-- Domain -->
+    <text x="830" y="26" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="16" font-weight="600" text-anchor="end">playit.morbius.workers.dev</text>
+  </g>
+</svg>

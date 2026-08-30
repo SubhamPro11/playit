@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, LogOut, ExternalLink, Search, CheckCircle2, AlertTriangle } from 'lucide-react';
-import { Video } from '../../types/video';
+import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, LogOut, ExternalLink, Search, CheckCircle2, AlertTriangle, Inbox, Check, XCircle } from 'lucide-react';
+import { Video, StationSubmission } from '../../types/video';
 import { CATEGORIES, Category } from '../../data/playlist';
 import { EditVideoModal } from './EditVideoModal';
 import { AddVideoModal } from './AddVideoModal';
@@ -9,25 +9,34 @@ import { BrandLogo } from '../BrandLogo';
 
 interface AdminDashboardProps {
   videos: Video[];
+  submissions: StationSubmission[];
   isSupabaseConfigured: boolean;
   onUpdateVideo: (updated: Video) => Promise<boolean>;
   onDeleteVideo: (id: string) => Promise<boolean>;
   onAddVideo: (newVideo: Omit<Video, 'id'>) => Promise<boolean>;
   onReorderVideos: (reordered: Video[]) => Promise<boolean>;
+  onApproveSubmission: (submission: StationSubmission) => Promise<boolean>;
+  onRejectSubmission: (id: string) => Promise<boolean>;
+  onDeleteSubmission: (id: string) => Promise<boolean>;
   onLogout: () => void;
   onViewPublicSite: () => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   videos,
+  submissions,
   isSupabaseConfigured,
   onUpdateVideo,
   onDeleteVideo,
   onAddVideo,
   onReorderVideos,
+  onApproveSubmission,
+  onRejectSubmission,
+  onDeleteSubmission,
   onLogout,
   onViewPublicSite,
 }) => {
+  const [activeTab, setActiveTab] = useState<'entries' | 'submissions'>('entries');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -36,6 +45,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [deletingVideo, setDeletingVideo] = useState<Video | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
+
+  const pendingSubmissionsCount = useMemo(() => {
+    return submissions.filter((s) => s.status === 'pending').length;
+  }, [submissions]);
 
   const showFeedback = (type: 'success' | 'error', text: string) => {
     setStatusMessage({ type, text });
@@ -174,171 +187,350 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           )}
         </div>
 
-        {/* Controls Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-surface-700">
-          
-          <div>
-            <h1 className="font-sans font-bold text-2xl text-white">
-              Playlist entries
-            </h1>
-            <p className="text-xs text-slate-400 mt-1">
-              Manage, edit, reorder, and upload media thumbnails for all {videos.length} items.
-            </p>
-          </div>
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-2 mb-6 border-b border-surface-700 pb-3">
+          <button
+            type="button"
+            onClick={() => setActiveTab('entries')}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'entries'
+                ? 'bg-accent-500 text-surface-950 font-bold shadow-sm'
+                : 'bg-surface-850 text-slate-400 hover:text-white border border-surface-700 hover:border-surface-600'
+            }`}
+          >
+            <span>Live Catalog</span>
+            <span className={`px-1.5 py-0.5 rounded-full font-mono text-[10px] ${
+              activeTab === 'entries' ? 'bg-surface-950/20 text-surface-950 font-bold' : 'bg-surface-800 text-slate-300'
+            }`}>
+              {videos.length}
+            </span>
+          </button>
 
           <button
-            onClick={() => setIsAddOpen(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-accent-500 hover:bg-accent-400 active:bg-accent-600 text-surface-950 font-bold text-xs uppercase tracking-wider transition-colors shrink-0 shadow-md cursor-pointer"
+            type="button"
+            onClick={() => setActiveTab('submissions')}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'submissions'
+                ? 'bg-accent-500 text-surface-950 font-bold shadow-sm'
+                : 'bg-surface-850 text-slate-400 hover:text-white border border-surface-700 hover:border-surface-600'
+            }`}
           >
-            <Plus className="w-4 h-4" />
-            <span>Add new entry</span>
+            <Inbox className="w-3.5 h-3.5" />
+            <span>Community Submissions</span>
+            {pendingSubmissionsCount > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full bg-amber-400 text-surface-950 font-mono text-[10px] font-bold">
+                {pendingSubmissionsCount} new
+              </span>
+            )}
           </button>
         </div>
 
-        {/* Filter / Search Row */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6">
-          <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search playlist table..."
-              className="w-full pl-9 pr-4 py-2 bg-surface-850 text-xs text-slate-200 rounded-xl border border-surface-700 focus:border-accent-500 focus:outline-none font-sans transition-colors"
-            />
-          </div>
+        {activeTab === 'entries' ? (
+          <>
+            {/* Controls Bar */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-surface-700">
+              <div>
+                <h1 className="font-sans font-bold text-2xl text-white">
+                  Playlist entries
+                </h1>
+                <p className="text-xs text-slate-400 mt-1">
+                  Manage, edit, reorder, and upload media thumbnails for all {videos.length} items.
+                </p>
+              </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value as Category)}
-              className="px-3 py-2 bg-surface-850 text-xs text-slate-300 rounded-xl border border-surface-700 focus:border-accent-500 focus:outline-none font-sans cursor-pointer transition-colors"
-            >
-              {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat} className="bg-surface-850 text-slate-200">
-                  {cat === 'All' ? 'All categories' : cat}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+              <button
+                onClick={() => setIsAddOpen(true)}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-accent-500 hover:bg-accent-400 active:bg-accent-600 text-surface-950 font-bold text-xs uppercase tracking-wider transition-colors shrink-0 shadow-md cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add new entry</span>
+              </button>
+            </div>
 
-        {/* Entries Table */}
-        <div className="bg-surface-850 border border-surface-700 rounded-xl overflow-hidden shadow-xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-surface-700 bg-surface-900 text-xs text-slate-400 font-semibold uppercase tracking-wider">
-                  <th className="py-3 px-4 w-16 text-center">Order</th>
-                  <th className="py-3 px-4 w-24">Thumb</th>
-                  <th className="py-3 px-4">Title & Details</th>
-                  <th className="py-3 px-4 w-44">Category</th>
-                  <th className="py-3 px-4 w-28 text-center">Reorder</th>
-                  <th className="py-3 px-4 w-28 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-surface-700 text-xs">
-                {filteredVideos.length > 0 ? (
-                  filteredVideos.map((video, idx) => (
-                    <tr
-                      key={video.id}
-                      className="hover:bg-surface-800 transition-colors group"
-                    >
-                      {/* Order */}
-                      <td className="py-3 px-4 text-center font-mono text-accent-400 font-semibold">
-                        #{String(video.orderIndex).padStart(2, '0')}
-                      </td>
+            {/* Filter / Search Row */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6">
+              <div className="relative w-full sm:w-80">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search playlist table..."
+                  className="w-full pl-9 pr-4 py-2 bg-surface-850 text-xs text-slate-200 rounded-xl border border-surface-700 focus:border-accent-500 focus:outline-none font-sans transition-colors"
+                />
+              </div>
 
-                      {/* Thumbnail */}
-                      <td className="py-3 px-4">
-                        <div className="w-16 aspect-video rounded-lg overflow-hidden bg-surface-950 border border-surface-700 relative">
-                          <img
-                            src={video.thumbnailUrl}
-                            alt={video.title}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      </td>
+              <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value as Category)}
+                  className="px-3 py-2 bg-surface-850 text-xs text-slate-300 rounded-xl border border-surface-700 focus:border-accent-500 focus:outline-none font-sans cursor-pointer transition-colors"
+                >
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat} className="bg-surface-850 text-slate-200">
+                      {cat === 'All' ? 'All categories' : cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-                      {/* Title & Link */}
-                      <td className="py-3 px-4 max-w-xs sm:max-w-md">
-                        <div className="font-sans font-semibold text-white group-hover:text-accent-400 transition-colors">
-                          {video.title}
-                        </div>
-                        <a
-                          href={video.externalLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-mono text-xs text-slate-400 hover:text-slate-200 truncate block mt-0.5"
-                        >
-                          {video.externalLink}
-                        </a>
-                      </td>
-
-                      {/* Category */}
-                      <td className="py-3 px-4 text-xs text-slate-300">
-                        <span className="px-2.5 py-1 rounded-md bg-surface-900 border border-surface-700 inline-block">
-                          {video.category}
-                        </span>
-                      </td>
-
-                      {/* Reorder Buttons */}
-                      <td className="py-3 px-4 text-center">
-                        <div className="inline-flex items-center gap-1">
-                          <button
-                            onClick={() => handleMoveUp(idx)}
-                            disabled={idx === 0}
-                            title="Move up"
-                            className="p-1 rounded-md bg-surface-900 hover:bg-surface-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer border border-surface-700"
-                          >
-                            <ArrowUp className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleMoveDown(idx)}
-                            disabled={idx === filteredVideos.length - 1}
-                            title="Move down"
-                            className="p-1 rounded-md bg-surface-900 hover:bg-surface-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer border border-surface-700"
-                          >
-                            <ArrowDown className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-3 px-4 text-right">
-                        <div className="inline-flex items-center gap-1.5">
-                          <button
-                            onClick={() => setEditingVideo(video)}
-                            title="Edit entry"
-                            className="p-1.5 rounded-lg bg-surface-900 hover:bg-surface-750 text-slate-300 hover:text-white transition-colors cursor-pointer border border-surface-700"
-                          >
-                            <Edit2 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => setDeletingVideo(video)}
-                            title="Delete entry"
-                            className="p-1.5 rounded-lg bg-surface-900 hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors cursor-pointer border border-surface-700"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
+            {/* Entries Table */}
+            <div className="bg-surface-850 border border-surface-700 rounded-xl overflow-hidden shadow-xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-surface-700 bg-surface-900 text-xs text-slate-400 font-semibold uppercase tracking-wider">
+                      <th className="py-3 px-4 w-16 text-center">Order</th>
+                      <th className="py-3 px-4 w-24">Thumb</th>
+                      <th className="py-3 px-4">Title & Details</th>
+                      <th className="py-3 px-4 w-44">Category</th>
+                      <th className="py-3 px-4 w-28 text-center">Reorder</th>
+                      <th className="py-3 px-4 w-28 text-right">Actions</th>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-500 font-mono">
-                      No matching playlist entries found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody className="divide-y divide-surface-700 text-xs">
+                    {filteredVideos.length > 0 ? (
+                      filteredVideos.map((video, idx) => (
+                        <tr
+                          key={video.id}
+                          className="hover:bg-surface-800 transition-colors group"
+                        >
+                          {/* Order */}
+                          <td className="py-3 px-4 text-center font-mono text-accent-400 font-semibold">
+                            #{String(video.orderIndex).padStart(2, '0')}
+                          </td>
+
+                          {/* Thumbnail */}
+                          <td className="py-3 px-4">
+                            <div className="w-16 aspect-video rounded-lg overflow-hidden bg-surface-950 border border-surface-700 relative">
+                              <img
+                                src={video.thumbnailUrl}
+                                alt={video.title}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLElement).style.display = 'none';
+                                }}
+                              />
+                            </div>
+                          </td>
+
+                          {/* Title & Link */}
+                          <td className="py-3 px-4 max-w-xs sm:max-w-md">
+                            <div className="font-sans font-semibold text-white group-hover:text-accent-400 transition-colors">
+                              {video.title}
+                            </div>
+                            <a
+                              href={video.externalLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-mono text-xs text-slate-400 hover:text-slate-200 truncate block mt-0.5"
+                            >
+                              {video.externalLink}
+                            </a>
+                          </td>
+
+                          {/* Category */}
+                          <td className="py-3 px-4 text-xs text-slate-300">
+                            <span className="px-2.5 py-1 rounded-md bg-surface-900 border border-surface-700 inline-block">
+                              {video.category}
+                            </span>
+                          </td>
+
+                          {/* Reorder Buttons */}
+                          <td className="py-3 px-4 text-center">
+                            <div className="inline-flex items-center gap-1">
+                              <button
+                                onClick={() => handleMoveUp(idx)}
+                                disabled={idx === 0}
+                                title="Move up"
+                                className="p-1 rounded-md bg-surface-900 hover:bg-surface-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer border border-surface-700"
+                              >
+                                <ArrowUp className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleMoveDown(idx)}
+                                disabled={idx === filteredVideos.length - 1}
+                                title="Move down"
+                                className="p-1 rounded-md bg-surface-900 hover:bg-surface-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer border border-surface-700"
+                              >
+                                <ArrowDown className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="py-3 px-4 text-right">
+                            <div className="inline-flex items-center gap-1.5">
+                              <button
+                                onClick={() => setEditingVideo(video)}
+                                title="Edit entry"
+                                className="p-1.5 rounded-lg bg-surface-900 hover:bg-surface-750 text-slate-300 hover:text-white transition-colors cursor-pointer border border-surface-700"
+                              >
+                                <Edit2 className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => setDeletingVideo(video)}
+                                title="Delete entry"
+                                className="p-1.5 rounded-lg bg-surface-900 hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors cursor-pointer border border-surface-700"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={6} className="py-12 text-center text-slate-500 font-mono">
+                          No matching playlist entries found.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        ) : (
+          /* Submissions Moderation Tab */
+          <div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-surface-700">
+              <div>
+                <h1 className="font-sans font-bold text-2xl text-white">
+                  Community Submissions
+                </h1>
+                <p className="text-xs text-slate-400 mt-1">
+                  Review, approve, or reject station suggestions submitted by visitors.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-surface-850 border border-surface-700 rounded-xl overflow-hidden shadow-xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-surface-700 bg-surface-900 text-xs text-slate-400 font-semibold uppercase tracking-wider">
+                      <th className="py-3 px-4">Proposed Station</th>
+                      <th className="py-3 px-4 w-36">Genre</th>
+                      <th className="py-3 px-4">Submitter Notes</th>
+                      <th className="py-3 px-4 w-28">Status</th>
+                      <th className="py-3 px-4 w-36 text-right">Moderation</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-surface-700 text-xs">
+                    {submissions.length > 0 ? (
+                      submissions.map((sub) => (
+                        <tr key={sub.id} className="hover:bg-surface-800 transition-colors">
+                          {/* Station Name & Link */}
+                          <td className="py-3.5 px-4 max-w-xs">
+                            <div className="font-sans font-semibold text-white">
+                              {sub.name}
+                            </div>
+                            <a
+                              href={sub.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-mono text-xs text-accent-400 hover:underline inline-flex items-center gap-1 mt-0.5"
+                            >
+                              <span>{sub.url}</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                            <div className="text-[10px] text-slate-500 font-mono mt-1">
+                              Submitted: {new Date(sub.createdAt).toLocaleDateString()}
+                            </div>
+                          </td>
+
+                          {/* Category */}
+                          <td className="py-3.5 px-4 text-slate-300">
+                            <span className="px-2 py-0.5 rounded-md bg-surface-900 border border-surface-700 text-xs">
+                              {sub.category}
+                            </span>
+                          </td>
+
+                          {/* Notes */}
+                          <td className="py-3.5 px-4 text-slate-400 text-xs leading-relaxed max-w-sm">
+                            {sub.notes ? sub.notes : <span className="text-slate-600 italic">No notes provided</span>}
+                          </td>
+
+                          {/* Status */}
+                          <td className="py-3.5 px-4">
+                            <span
+                              className={`px-2.5 py-1 rounded-full text-[11px] font-mono font-semibold uppercase ${
+                                sub.status === 'approved'
+                                  ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                                  : sub.status === 'rejected'
+                                  ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                                  : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+                              }`}
+                            >
+                              {sub.status}
+                            </span>
+                          </td>
+
+                          {/* Moderation Actions */}
+                          <td className="py-3.5 px-4 text-right">
+                            <div className="inline-flex items-center gap-1.5">
+                              {sub.status === 'pending' && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      const ok = await onApproveSubmission(sub);
+                                      if (ok) {
+                                        showFeedback('success', `Approved and published "${sub.name}"!`);
+                                      }
+                                    }}
+                                    title="Approve & Publish to Directory"
+                                    className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors cursor-pointer"
+                                  >
+                                    <Check className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      const ok = await onRejectSubmission(sub.id);
+                                      if (ok) {
+                                        showFeedback('error', `Rejected proposal for "${sub.name}"`);
+                                      }
+                                    }}
+                                    title="Reject submission"
+                                    className="p-1.5 rounded-lg bg-surface-900 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition-colors cursor-pointer border border-surface-700"
+                                  >
+                                    <XCircle className="w-3.5 h-3.5" />
+                                  </button>
+                                </>
+                              )}
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  const ok = await onDeleteSubmission(sub.id);
+                                  if (ok) {
+                                    showFeedback('success', 'Submission removed');
+                                  }
+                                }}
+                                title="Delete record"
+                                className="p-1.5 rounded-lg bg-surface-900 hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors cursor-pointer border border-surface-700"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={5} className="py-12 text-center text-slate-500 font-mono">
+                          No suggestions submitted yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
       </main>
 

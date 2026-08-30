@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { Search, X, ExternalLink, Heart } from 'lucide-react';
 import { Video, getEffectiveThumbnailUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../types/video';
 
+import { CATEGORIES, Category } from '../data/playlist';
+
 interface HeroSectionProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onClearSearch: () => void;
+  selectedCategory?: Category;
+  onSelectCategory?: (category: Category) => void;
   featuredVideos: Video[];
   isFavorite: (id: string) => boolean;
   onToggleFavorite: (id: string) => void;
@@ -15,6 +19,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   searchQuery,
   onSearchChange,
   onClearSearch,
+  selectedCategory = 'All',
+  onSelectCategory,
   featuredVideos,
   isFavorite,
   onToggleFavorite,
@@ -80,14 +86,36 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 )}
               </div>
 
+              {/* Category Filter Chips */}
+              <div className="mt-3.5 flex items-center gap-1.5 flex-wrap">
+                {CATEGORIES.map((cat) => {
+                  const isSelected = selectedCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => onSelectCategory?.(cat)}
+                      className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-accent-500 text-surface-950 font-bold shadow-sm'
+                          : 'bg-surface-850 text-slate-300 hover:bg-surface-800 hover:text-white border border-surface-700 hover:border-surface-600'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
+
               {/* Quick Suggestion Tags */}
               <div className="mt-3 flex items-center gap-2 text-xs text-slate-400 flex-wrap">
-                <span className="text-slate-400">Try:</span>
+                <span className="text-slate-400 font-mono text-[11px]">Quick keywords:</span>
                 {['Saloon', 'Roadways', 'Ghazal', 'Doordarshan', 'Lo-Fi'].map((term) => (
                   <button
                     key={term}
+                    type="button"
                     onClick={() => onSearchChange(term)}
-                    className="px-2.5 py-1 rounded-lg bg-surface-850 hover:bg-surface-800 text-slate-300 hover:text-accent-400 border border-surface-700 hover:border-surface-600 transition-colors cursor-pointer"
+                    className="px-2 py-0.5 rounded-md bg-surface-850 hover:bg-surface-800 text-slate-400 hover:text-accent-400 border border-surface-700/60 hover:border-surface-600 text-[11px] transition-colors cursor-pointer"
                   >
                     {term}
                   </button>
