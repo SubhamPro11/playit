@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Video } from '../types/video';
 import { VideoCard } from './VideoCard';
@@ -20,6 +20,25 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({
   onViewAllCategory,
 }) => {
   const rowRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
+
+  const checkScrollability = useCallback(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    const overflow = scrollWidth > clientWidth + 4;
+    setHasOverflow(overflow);
+    setCanScrollLeft(scrollLeft > 5);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
+  }, []);
+
+  useEffect(() => {
+    checkScrollability();
+    window.addEventListener('resize', checkScrollability);
+    return () => window.removeEventListener('resize', checkScrollability);
+  }, [checkScrollability, videos.length]);
 
   if (videos.length === 0) return null;
 
@@ -58,44 +77,59 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
 
-          {/* Left/Right Scroll Arrows */}
-          <div className="hidden sm:flex items-center gap-1">
-            <button
-              onClick={() => scroll('left')}
-              aria-label={`Scroll ${category} left`}
-              className="w-8 h-8 rounded-xl bg-surface-850 hover:bg-surface-800 text-slate-300 hover:text-white border border-surface-700 hover:border-surface-600 flex items-center justify-center transition-colors cursor-pointer shadow-sm"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => scroll('right')}
-              aria-label={`Scroll ${category} right`}
-              className="w-8 h-8 rounded-xl bg-surface-850 hover:bg-surface-800 text-slate-300 hover:text-white border border-surface-700 hover:border-surface-600 flex items-center justify-center transition-colors cursor-pointer shadow-sm"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+          {/* Left/Right Scroll Arrows (dynamically enabled when row overflows) */}
+          {hasOverflow && (
+            <div className="hidden sm:flex items-center gap-1">
+              <button
+                onClick={() => scroll('left')}
+                disabled={!canScrollLeft}
+                aria-label={`Scroll ${category} left`}
+                className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all ${
+                  canScrollLeft
+                    ? 'bg-surface-850 hover:bg-surface-800 text-slate-200 hover:text-white border-surface-700 hover:border-surface-600 cursor-pointer shadow-sm'
+                    : 'bg-surface-950/50 text-slate-600 border-surface-800 cursor-not-allowed opacity-40'
+                }`}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => scroll('right')}
+                disabled={!canScrollRight}
+                aria-label={`Scroll ${category} right`}
+                className={`w-8 h-8 rounded-xl border flex items-center justify-center transition-all ${
+                  canScrollRight
+                    ? 'bg-surface-850 hover:bg-surface-800 text-slate-200 hover:text-white border-surface-700 hover:border-surface-600 cursor-pointer shadow-sm'
+                    : 'bg-surface-950/50 text-slate-600 border-surface-800 cursor-not-allowed opacity-40'
+                }`}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Horizontal Cards Carousel */}
-      <div
-        ref={rowRef}
-        className="flex gap-4 sm:gap-5 overflow-x-auto pb-4 pt-1 scrollbar-none snap-x -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
-      >
-        {videos.map((video) => (
-          <div
-            key={video.id}
-            className="w-[280px] sm:w-[320px] shrink-0 snap-start"
-          >
-            <VideoCard
-              video={video}
-              variant="row"
-              isFavorite={isFavorite(video.id)}
-              onToggleFavorite={onToggleFavorite}
-            />
-          </div>
-        ))}
+      <div className="relative">
+        <div
+          ref={rowRef}
+          onScroll={checkScrollability}
+          className="flex gap-4 sm:gap-5 overflow-x-auto pb-4 pt-1 scrollbar-none snap-x -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
+        >
+          {videos.map((video) => (
+            <div
+              key={video.id}
+              className="w-[280px] sm:w-[320px] shrink-0 snap-start"
+            >
+              <VideoCard
+                video={video}
+                variant="row"
+                isFavorite={isFavorite(video.id)}
+                onToggleFavorite={onToggleFavorite}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

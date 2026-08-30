@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, ExternalLink } from 'lucide-react';
+import { Heart, ArrowUpRight } from 'lucide-react';
 import { Video, getEffectiveThumbnailUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../types/video';
 
 interface VideoCardProps {
@@ -23,7 +23,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     setImageError(false);
   }, [video.thumbnailUrl, video.category]);
 
-  // Extract clean domain for metadata row
+  // Extract clean domain for destination display
   const domain = video.externalLink
     .replace(/^https?:\/\//, '')
     .split('/')[0];
@@ -50,6 +50,8 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       href={video.externalLink}
       target="_blank"
       rel="noopener noreferrer"
+      aria-label={`Open ${video.title} on ${domain} in a new tab`}
+      title={`Open ${video.title} on ${domain} (opens in new tab)`}
       className="group flex flex-col bg-surface-850 hover:bg-surface-800 rounded-xl border border-surface-700 hover:border-surface-600 focus-visible:border-accent-500 transition-all duration-200 overflow-hidden relative shadow-sm hover:shadow-md h-full cursor-pointer"
     >
       {/* 16:9 Thumbnail Viewport */}
@@ -77,14 +79,6 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           </div>
         )}
 
-        {/* Index Coordinate Badge */}
-        <div className="absolute top-2.5 left-2.5">
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-surface-950/90 backdrop-blur-md font-mono text-[11px] text-slate-200 border border-white/10 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full mr-1.5 shrink-0 bg-accent-500" />
-            <span>#{String(video.orderIndex).padStart(2, '0')}</span>
-          </span>
-        </div>
-
         {/* Favorite Heart Button */}
         <button
           type="button"
@@ -107,10 +101,12 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       {/* Card Info & Scannable Typography */}
       <div className={`flex-1 flex flex-col justify-between bg-surface-850 group-hover:bg-surface-800 transition-colors ${isRow ? 'p-4' : 'p-3.5 sm:p-4'}`}>
         <div>
-          {/* Category indicator */}
-          <div className="text-xs text-slate-400 font-medium tracking-wide uppercase mb-1.5 truncate">
-            {video.category}
-          </div>
+          {/* Category tag ONLY shown in cross-category grid/search view */}
+          {!isRow && (
+            <div className="inline-block px-2 py-0.5 rounded-md bg-surface-950 border border-surface-700/80 text-[10px] text-slate-400 font-medium tracking-wide uppercase mb-2 truncate max-w-full">
+              {video.category}
+            </div>
+          )}
 
           {/* Card title */}
           <h3 className={`font-sans font-bold text-white group-hover:text-accent-400 transition-colors leading-snug line-clamp-2 ${isRow ? 'text-base sm:text-lg min-h-[3rem]' : 'text-sm sm:text-base min-h-[2.5rem]'}`}>
@@ -118,14 +114,13 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           </h3>
         </div>
 
-        {/* Metadata footer */}
-        <div className="mt-3.5 pt-2.5 border-t border-surface-700 flex items-center justify-between text-xs text-slate-400">
-          <span className="font-mono text-xs truncate max-w-[170px] text-slate-400 group-hover:text-slate-300 transition-colors">
+        {/* Unified Outbound Destination Bar */}
+        <div className="mt-3 pt-2.5 border-t border-surface-700/80 flex items-center justify-between text-xs text-slate-400">
+          <span className="font-mono text-xs truncate max-w-[200px] text-slate-400 group-hover:text-slate-300 transition-colors">
             {domain}
           </span>
-          <span className="inline-flex items-center gap-1 text-slate-400 group-hover:text-accent-400 transition-colors font-medium shrink-0 ml-2">
-            <span>Listen</span>
-            <ExternalLink className="w-3 h-3" />
+          <span className="inline-flex items-center gap-1 text-slate-400 group-hover:text-accent-400 transition-colors font-medium shrink-0">
+            <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </span>
         </div>
       </div>

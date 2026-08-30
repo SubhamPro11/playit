@@ -33,15 +33,6 @@ const CATEGORIES = [
 ];
 
 function generateStructuredData() {
-  const websiteSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    'name': 'PlayIt',
-    'url': 'https://playit.morbius.workers.dev/',
-    'description': 'A curated single-playlist showcase of 70 independent web radio, audio playlists, and soundscape projects.',
-    'inLanguage': 'en'
-  };
-
   const itemListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -57,14 +48,10 @@ function generateStructuredData() {
     }))
   };
 
-  return `
-    <!-- Schema.org JSON-LD Structured Data -->
-    <script type="application/ld+json">
-${JSON.stringify(websiteSchema, null, 2)}
-    </script>
+  return `<!-- Schema.org ItemList -->
     <script type="application/ld+json">
 ${JSON.stringify(itemListSchema, null, 2)}
-    </script>`.trim();
+    </script>`;
 }
 
 function generatePrerenderedHTML() {
@@ -82,14 +69,12 @@ function generatePrerenderedHTML() {
         <article id="track-${video.id}" class="video-prerender-card" style="display:flex; flex-direction:column; background:#111114; border:1px solid #27272a; border-radius:1rem; overflow:hidden; margin-bottom:1rem;">
           <div style="aspect-ratio:16/9; background:#000; position:relative; overflow:hidden;">
             <img src="${video.thumbnailUrl}" alt="${video.title}" width="640" height="360" loading="lazy" style="width:100%; height:100%; object-fit:cover;" />
-            <span style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.85); color:#fff; font-family:monospace; font-size:11px; padding:2px 8px; border-radius:4px;">#${String(video.orderIndex).padStart(2, '0')}</span>
           </div>
-          <div style="padding:1rem;">
-            <span style="color:#a1a1aa; font-family:monospace; font-size:11px; text-transform:uppercase;">${video.category}</span>
-            <h3 style="color:#fff; font-size:1.125rem; font-weight:600; margin:0.25rem 0 0.5rem 0;">
+          <div style="padding:1rem; flex:1; display:flex; flex-direction:column; justify-content:space-between;">
+            <h3 style="color:#fff; font-size:1.125rem; font-weight:600; margin:0 0 0.5rem 0;">
               <a href="${video.externalLink}" target="_blank" rel="noopener noreferrer" style="color:#fff; text-decoration:none;">${video.title}</a>
             </h3>
-            <p style="color:#71717a; font-family:monospace; font-size:0.75rem; margin:0;">${domain}</p>
+            <p style="color:#71717a; font-family:monospace; font-size:0.75rem; margin:0;">${domain} ↗</p>
           </div>
         </article>`;
     }).join('\n');
@@ -98,7 +83,7 @@ function generatePrerenderedHTML() {
       <section id="${catSlug}" class="category-prerender-section" style="margin-bottom:3rem;">
         <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.25rem;">
           <h2 style="font-size:1.5rem; font-weight:700; color:#fff; margin:0;">${cat}</h2>
-          <span style="font-family:monospace; font-size:11px; color:#a1a1aa; background:#141418; border:1px solid #27272a; padding:2px 8px; border-radius:9999px;">${items.length} videos</span>
+          <span style="font-family:monospace; font-size:11px; color:#a1a1aa; background:#141418; border:1px solid #27272a; padding:2px 8px; border-radius:9999px;">${items.length} feeds</span>
         </div>
         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1.25rem;">
           ${itemsHtml}
@@ -113,7 +98,7 @@ function generatePrerenderedHTML() {
           <span style="width:10px; height:10px; border-radius:50%; background:#ef4444; display:inline-block;"></span>
           <span>PlayIt</span>
         </div>
-        <span style="font-family:monospace; font-size:0.75rem; color:#a1a1aa; background:#141418; border:1px solid #27272a; padding:0.5rem 0.875rem; border-radius:0.75rem;">70 videos</span>
+        <span style="font-family:monospace; font-size:0.75rem; color:#a1a1aa; background:#141418; border:1px solid #27272a; padding:0.5rem 0.875rem; border-radius:0.75rem;">70 feeds</span>
       </div>
     </header>
 
@@ -145,33 +130,23 @@ function injectPrerender(filePath) {
   
   // 1. Inject / Update Structured Data in <head>
   const structuredData = generateStructuredData();
-  if (html.includes('<!-- Schema.org JSON-LD Structured Data -->')) {
-    html = html.replace(
-      /<!-- Schema\.org JSON-LD Structured Data -->[\s\S]*?<\/script>\s*<\/script>/,
-      structuredData
-    );
-  } else {
+  if (!html.includes('<!-- Schema.org ItemList -->')) {
     html = html.replace('</head>', `    ${structuredData}\n  </head>`);
   }
 
-  // 2. Inject / Update Prerendered HTML in <div id="root">
+  // 2. Inject Prerendered HTML into empty <div id="root"></div>
   const prerendered = generatePrerenderedHTML();
-  const rootOpenIndex = html.indexOf('<div id="root">');
-  if (rootOpenIndex !== -1) {
-    const scriptOrBodyIndex = html.search(/<script\s+type="module"|<\/body>/);
-    if (scriptOrBodyIndex !== -1) {
-      const beforeRoot = html.substring(0, rootOpenIndex + '<div id="root">'.length);
-      const afterRoot = html.substring(scriptOrBodyIndex);
-      html = `${beforeRoot}\n${prerendered}\n    </div>\n    ${afterRoot.trimStart()}`;
-    }
+  if (html.includes('<div id="root"></div>')) {
+    html = html.replace(
+      '<div id="root"></div>',
+      `<div id="root">\n${prerendered}\n    </div>`
+    );
   }
 
   fs.writeFileSync(filePath, html, 'utf8');
   console.log(`Successfully injected structured data and prerendered markup into ${path.basename(filePath)}!`);
 }
 
-const indexPath = path.resolve(__dirname, '../index.html');
-injectPrerender(indexPath);
-
+// Only inject into built production bundle
 const distIndexPath = path.resolve(__dirname, '../dist/index.html');
 injectPrerender(distIndexPath);
