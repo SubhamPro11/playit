@@ -1,5 +1,5 @@
-import React from 'react';
-import { Heart } from 'lucide-react';
+import React, { useState } from 'react';
+import { Heart, Menu, X, Plus, Info } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { SortControl, SortOption } from './SortControl';
 import { LiveVisitorsBadge } from './LiveVisitorsBadge';
@@ -36,7 +36,13 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
   onOpenAbout,
   onOpenSuggest,
 }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isFiltered = selectedCategory !== 'All' || favoritesOnly;
+
+  const handleMobileAction = (action: () => void) => {
+    action();
+    setMobileMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-30 bg-surface-900/95 backdrop-blur-md border-b border-surface-700">
@@ -45,8 +51,8 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
         {/* Brand Logo */}
         <BrandLogo />
 
-        {/* Controls Toolbar */}
-        <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap justify-end">
+        {/* Desktop Controls Toolbar */}
+        <div className="hidden md:flex items-center gap-2 sm:gap-2.5 flex-wrap justify-end">
           
           {/* Surprise Me Random Picker Button */}
           {onSurpriseMe && (
@@ -57,7 +63,7 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
               className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-semibold text-accent-400 hover:text-white bg-accent-500/10 hover:bg-accent-500 border border-accent-500/30 hover:border-accent-400 transition-all cursor-pointer shadow-xs group"
             >
               <span className="text-sm transition-transform group-hover:rotate-12">🎲</span>
-              <span className="hidden md:inline group-hover:text-surface-950">Surprise me</span>
+              <span className="hidden lg:inline group-hover:text-surface-950">Surprise me</span>
             </button>
           )}
 
@@ -66,7 +72,7 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
             <button
               type="button"
               onClick={onOpenSuggest}
-              className="px-3 py-1.5 sm:py-2 rounded-xl text-xs font-medium text-accent-400 hover:text-accent-300 bg-surface-850 hover:bg-surface-800 border border-surface-700 hover:border-accent-500/50 transition-all cursor-pointer hidden sm:inline-block"
+              className="px-3 py-1.5 sm:py-2 rounded-xl text-xs font-medium text-accent-400 hover:text-accent-300 bg-surface-850 hover:bg-surface-800 border border-surface-700 hover:border-accent-500/50 transition-all cursor-pointer"
             >
               + Suggest
             </button>
@@ -94,6 +100,7 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
           <button
             type="button"
             onClick={onToggleFavoritesOnly}
+            aria-label={favoritesOnly ? "Show all stations" : "Show favorites only"}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-medium transition-all cursor-pointer border ${
               favoritesOnly
                 ? 'bg-accent-500/15 text-accent-400 border-accent-500/40 font-semibold'
@@ -105,7 +112,7 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
                 favoritesOnly ? 'fill-accent-500 text-accent-500' : 'text-slate-400'
               }`}
             />
-            <span className="hidden sm:inline">Favorites</span>
+            <span>Favorites</span>
             {favoritesCount > 0 && (
               <span className="px-1.5 py-0.2 rounded-full bg-accent-500/20 text-accent-300 text-[10px] font-bold font-mono">
                 {favoritesCount}
@@ -136,7 +143,111 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
           </div>
         </div>
 
+        {/* Mobile Compact Bar (< md) */}
+        <div className="flex md:hidden items-center gap-2">
+          <ThemeToggle />
+          <UserAuthControl />
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(prev => !prev)}
+            aria-expanded={mobileMenuOpen}
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            className="p-2 rounded-xl bg-surface-850 hover:bg-surface-800 text-slate-300 hover:text-white border border-surface-700 transition-colors cursor-pointer"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+
       </div>
+
+      {/* Mobile Expandable Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-surface-700 bg-surface-900/98 backdrop-blur-xl px-4 py-4 space-y-3 animate-in slide-in-from-top-2 duration-150 shadow-2xl">
+          
+          <div className="flex items-center justify-between pb-3 border-b border-surface-800">
+            <LiveVisitorsBadge />
+            <div className="text-xs text-slate-400">
+              <span className="text-accent-400 font-mono font-bold">{filteredItemsCount}</span> of {totalItems} stations
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            {onSurpriseMe && (
+              <button
+                type="button"
+                onClick={() => handleMobileAction(onSurpriseMe)}
+                className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-accent-500/10 hover:bg-accent-500 text-accent-400 hover:text-surface-950 font-bold text-xs border border-accent-500/30 transition-all cursor-pointer"
+              >
+                <span>🎲</span>
+                <span>Surprise me</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => handleMobileAction(onToggleFavoritesOnly)}
+              className={`flex items-center justify-center gap-2 p-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                favoritesOnly
+                  ? 'bg-accent-500/20 text-accent-400 border-accent-500/50'
+                  : 'bg-surface-850 text-slate-300 border-surface-700 hover:text-white'
+              }`}
+            >
+              <Heart className={`w-3.5 h-3.5 ${favoritesOnly ? 'fill-accent-500 text-accent-500' : ''}`} />
+              <span>Favorites {favoritesCount > 0 ? `(${favoritesCount})` : ''}</span>
+            </button>
+          </div>
+
+          {/* Sort Control Mobile Row */}
+          <div className="pt-1">
+            <div className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1.5">
+              Sort Order
+            </div>
+            <SortControl
+              currentSort={currentSort}
+              onSelectSort={(sort) => {
+                onSelectSort(sort);
+                setMobileMenuOpen(false);
+              }}
+              onShuffle={() => {
+                onShuffle();
+                setMobileMenuOpen(false);
+              }}
+            />
+          </div>
+
+          {/* Quick Actions List */}
+          <div className="pt-2 border-t border-surface-800 space-y-1.5">
+            {onOpenSuggest && (
+              <button
+                type="button"
+                onClick={() => handleMobileAction(onOpenSuggest)}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-surface-850 hover:bg-surface-800 text-xs font-medium text-slate-200 border border-surface-700/80 transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <Plus className="w-3.5 h-3.5 text-accent-400" />
+                  <span>Suggest a New Station</span>
+                </div>
+                <span className="text-[10px] text-accent-400 font-mono">+ Submit</span>
+              </button>
+            )}
+
+            {onOpenAbout && (
+              <button
+                type="button"
+                onClick={() => handleMobileAction(onOpenAbout)}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-surface-850 hover:bg-surface-800 text-xs font-medium text-slate-200 border border-surface-700/80 transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <Info className="w-3.5 h-3.5 text-sky-400" />
+                  <span>About Airwaves & Manifesto</span>
+                </div>
+                <span className="text-[10px] text-slate-400 font-mono">Read &rarr;</span>
+              </button>
+            )}
+          </div>
+
+        </div>
+      )}
     </header>
   );
 };
