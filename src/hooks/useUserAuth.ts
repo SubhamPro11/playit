@@ -71,11 +71,14 @@ export function useUserAuth(): UserAuthState {
     }
 
     try {
-      const redirectUrl = typeof window !== 'undefined' ? window.location.origin : undefined;
+      const siteOrigin = typeof window !== 'undefined' && window.location.origin
+        ? `${window.location.origin}/`
+        : (import.meta.env.VITE_SITE_URL || 'https://airwaves.dpdns.org/');
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl,
+          redirectTo: siteOrigin,
         },
       });
 
