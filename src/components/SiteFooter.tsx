@@ -5,10 +5,9 @@ interface SiteFooterProps {
   totalVideos: number;
   onOpenAbout?: () => void;
   onOpenSuggest?: () => void;
-  onOpenExport?: () => void;
 }
 
-export const SiteFooter: React.FC<SiteFooterProps> = ({ totalVideos, onOpenAbout, onOpenSuggest, onOpenExport }) => {
+export const SiteFooter: React.FC<SiteFooterProps> = ({ totalVideos, onOpenAbout, onOpenSuggest }) => {
   const realCategoriesCount = CATEGORIES.filter((c) => c !== 'All').length;
 
   return (
@@ -43,15 +42,6 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ totalVideos, onOpenAbout
                 className="text-xs text-slate-300 hover:text-white font-medium underline underline-offset-4 cursor-pointer"
               >
                 Suggest a station &rarr;
-              </button>
-            )}
-            {onOpenExport && (
-              <button
-                type="button"
-                onClick={onOpenExport}
-                className="text-xs text-slate-300 hover:text-accent-400 font-medium underline underline-offset-4 cursor-pointer"
-              >
-                Export OPML / JSON &darr;
               </button>
             )}
           </div>

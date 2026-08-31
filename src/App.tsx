@@ -19,7 +19,6 @@ import { AboutModal } from './components/AboutModal';
 import { NotFoundPage } from './components/NotFoundPage';
 import { SuggestStationModal } from './components/SuggestStationModal';
 import { StationPermalinkPage } from './components/StationPermalinkPage';
-import { ExportModal } from './components/ExportModal';
 import { SupportSection } from './components/SupportSection';
 import { NewsletterSection } from './components/NewsletterSection';
 import { useSiteSettings } from './hooks/useSiteSettings';
@@ -59,7 +58,6 @@ export function App() {
   const [shuffleMap, setShuffleMap] = useState<Record<string, number>>({});
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
-  const [isExportOpen, setIsExportOpen] = useState(false);
 
   const { favoriteIds, favoritesCount, toggleFavorite, isFavorite } = useFavorites();
   const { isAuthenticated, loading: authLoading, error: authError, login, logout, isSupabaseConfigured } = useAdminAuth();
@@ -69,7 +67,7 @@ export function App() {
   const { addReaction, hasReacted, getReactionCount } = useReactions();
 
   // Enable arrow-key card navigation & slash shortcut on public catalog
-  useKeyboardNav(routeState.route === 'public' && !isAboutOpen && !isSuggestOpen && !isExportOpen);
+  useKeyboardNav(routeState.route === 'public' && !isAboutOpen && !isSuggestOpen);
 
   const handleApproveSubmission = async (sub: StationSubmission) => {
     const fallbackThumb = CATEGORY_FALLBACK_THUMBNAILS[sub.category] || DEFAULT_FALLBACK_THUMBNAIL;
@@ -323,7 +321,6 @@ export function App() {
         onSurpriseMe={handleSurpriseMe}
         onOpenAbout={() => setIsAboutOpen(true)}
         onOpenSuggest={() => setIsSuggestOpen(true)}
-        onOpenExport={() => setIsExportOpen(true)}
       />
 
       {/* Hero Section with Search Bar, Category Chips, and Spotlight Pick */}
@@ -484,7 +481,6 @@ export function App() {
         totalVideos={videos.length}
         onOpenAbout={() => setIsAboutOpen(true)}
         onOpenSuggest={() => setIsSuggestOpen(true)}
-        onOpenExport={() => setIsExportOpen(true)}
       />
 
       {/* Curation & About Modal */}
@@ -498,13 +494,6 @@ export function App() {
         isOpen={isSuggestOpen}
         onClose={() => setIsSuggestOpen(false)}
         onSubmitStation={submitStation}
-      />
-
-      {/* Export Collection Modal */}
-      <ExportModal
-        isOpen={isExportOpen}
-        onClose={() => setIsExportOpen(false)}
-        videos={videos}
       />
     </div>
   );

@@ -1,4 +1,5 @@
-import { Heart, Download } from 'lucide-react';
+import React from 'react';
+import { Heart } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { SortControl, SortOption } from './SortControl';
 import { LiveVisitorsBadge } from './LiveVisitorsBadge';
@@ -17,7 +18,6 @@ interface PlaylistHeaderProps {
   onSurpriseMe?: () => void;
   onOpenAbout?: () => void;
   onOpenSuggest?: () => void;
-  onOpenExport?: () => void;
 }
 
 export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
@@ -33,7 +33,6 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
   onSurpriseMe,
   onOpenAbout,
   onOpenSuggest,
-  onOpenExport,
 }) => {
   const isFiltered = selectedCategory !== 'All' || favoritesOnly;
 
@@ -79,19 +78,6 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
               className="px-3 py-1.5 sm:py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-surface-850 hover:bg-surface-800 border border-surface-700 hover:border-surface-600 transition-all cursor-pointer"
             >
               About
-            </button>
-          )}
-
-          {/* Export Collection Button */}
-          {onOpenExport && (
-            <button
-              type="button"
-              onClick={onOpenExport}
-              title="Export complete collection as JSON or OPML"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-surface-850 hover:bg-surface-800 border border-surface-700 hover:border-surface-600 transition-all cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5 text-accent-400" />
-              <span className="hidden md:inline">Export</span>
             </button>
           )}
 
