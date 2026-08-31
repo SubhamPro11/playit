@@ -174,5 +174,19 @@ ON public.email_subscribers FOR ALL
 USING (true)
 WITH CHECK (true);
 
+-- =========================================================
+-- 7. Create the `user_signins` table for unique registered listener count
+-- =========================================================
+CREATE TABLE IF NOT EXISTS public.user_signins (
+    user_id TEXT PRIMARY KEY,
+    first_signed_in_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL,
+    last_signed_in_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
+);
 
+ALTER TABLE public.user_signins ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow authenticated and anon upsert user_signins" ON public.user_signins;
+CREATE POLICY "Allow authenticated and anon upsert user_signins"
+ON public.user_signins FOR ALL
+USING (true)
+WITH CHECK (true);

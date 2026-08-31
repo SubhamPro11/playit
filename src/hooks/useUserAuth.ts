@@ -21,10 +21,29 @@ export function useUserAuth(): UserAuthState {
       return;
     }
 
+    // Record sign-in in Supabase
+    const recordUserSignin = async (userId: string) => {
+      if (!supabase || !isSupabaseConfigured) return;
+      try {
+        await supabase.from('user_signins').upsert(
+          {
+            user_id: userId,
+            last_signed_in_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id' }
+        );
+      } catch {
+        // Silent non-blocking failure
+      }
+    };
+
     // Get current active session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.user?.id) {
+        recordUserSignin(session.user.id);
+      }
       setLoading(false);
     });
 
@@ -34,6 +53,9 @@ export function useUserAuth(): UserAuthState {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.user?.id) {
+        recordUserSignin(session.user.id);
+      }
       setLoading(false);
     });
 

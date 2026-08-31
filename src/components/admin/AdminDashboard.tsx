@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, LogOut, ExternalLink, Search, CheckCircle2, AlertTriangle, Inbox, Check, XCircle, Activity, RefreshCw, Heart } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, LogOut, ExternalLink, Search, CheckCircle2, AlertTriangle, Inbox, Check, XCircle, Activity, RefreshCw, Heart, Users } from 'lucide-react';
 import { Video, StationSubmission } from '../../types/video';
 import { CATEGORIES, Category } from '../../data/playlist';
 import { EditVideoModal } from './EditVideoModal';
@@ -9,6 +9,7 @@ import { SupportSettingsPanel } from './SupportSettingsPanel';
 import { BrandLogo } from '../BrandLogo';
 import { useLinkHealth } from '../../hooks/useLinkHealth';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
+import { supabase } from '../../lib/supabase';
 
 interface AdminDashboardProps {
   videos: Video[];
@@ -56,6 +57,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [deletingVideo, setDeletingVideo] = useState<Video | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [registeredUsersCount, setRegisteredUsersCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from('user_signins')
+        .select('user_id', { count: 'exact', head: true })
+        .then(({ count, error }) => {
+          if (!error && typeof count === 'number') {
+            setRegisteredUsersCount(count);
+          }
+        });
+    }
+  }, [isSupabaseConfigured]);
 
   // Link Health State
   const {
@@ -300,6 +315,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             )}
           </button>
+
+          {/* Honest Signed-in Listeners Metric */}
+          {registeredUsersCount !== null && (
+            <div className="ml-auto hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-850 border border-surface-700 text-xs">
+              <Users className="w-3.5 h-3.5 text-accent-400" />
+              <span className="text-slate-400">Signed-in Listeners:</span>
+              <span className="font-mono font-bold text-white">{registeredUsersCount}</span>
+            </div>
+          )}
         </div>
 
         {activeTab === 'entries' ? (
