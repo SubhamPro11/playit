@@ -72,13 +72,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     <Search className="w-5 h-5" />
                   </div>
                   <input
+                    id="global-search-input"
                     type="text"
                     value={searchQuery}
                     onChange={(e) => onSearchChange(e.target.value)}
                     placeholder="Search 70 playlists by name, mood, or domain..."
-                    className="w-full pl-12 pr-10 py-3 bg-surface-850 text-white placeholder:text-slate-500 rounded-xl border border-surface-700 focus:border-accent-500 focus:ring-1 focus:ring-accent-500/30 focus:outline-none transition-all text-sm sm:text-base shadow-md"
+                    className="w-full pl-12 pr-12 py-3 bg-surface-850 text-white placeholder:text-slate-500 rounded-xl border border-surface-700 focus:border-accent-500 focus:ring-1 focus:ring-accent-500/30 focus:outline-none transition-all text-sm sm:text-base shadow-md"
                   />
-                  {searchQuery && (
+                  {searchQuery ? (
                     <button
                       onClick={onClearSearch}
                       aria-label="Clear search"
@@ -86,6 +87,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     >
                       <X className="w-4 h-4" />
                     </button>
+                  ) : (
+                    <div className="hidden sm:flex absolute inset-y-0 right-0 pr-3.5 items-center pointer-events-none">
+                      <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-surface-900 border border-surface-700 rounded shadow-xs">
+                        /
+                      </kbd>
+                    </div>
                   )}
                 </div>
 
