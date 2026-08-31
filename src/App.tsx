@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, SearchX, RotateCcw, Plus } from 'lucide-react';
 import { CATEGORIES, Category } from './data/playlist';
 import { PlaylistHeader } from './components/PlaylistHeader';
 import { HeroSection } from './components/HeroSection';
@@ -476,23 +476,41 @@ export function App() {
                   </>
                 ) : (
                   <>
-                    <div className="w-12 h-12 rounded-xl bg-surface-850 border border-surface-700 flex items-center justify-center mx-auto mb-4 text-accent-500 font-mono text-base shadow-sm">
-                      00
+                    <div className="w-14 h-14 rounded-2xl bg-surface-850 border border-surface-700 flex items-center justify-center mx-auto mb-4 text-accent-500 shadow-md">
+                      <SearchX className="w-7 h-7 text-accent-400" />
                     </div>
-                    <h2 className="font-sans font-semibold text-lg text-white">
-                      No matching audio feeds found
-                    </h2>
-                    <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                    <h2 className="font-sans font-bold text-xl text-white">
                       {searchQuery
-                        ? `No channels match "${searchQuery}".`
-                        : `No feeds found with the current filter settings.`}
+                        ? `No stations match "${searchQuery}"`
+                        : `No stations found for this filter`}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed max-w-sm mx-auto">
+                      {searchQuery
+                        ? `We couldn't find any audio channels matching "${searchQuery}". Try a different term, reset filters, or suggest a new station to our catalog.`
+                        : `Try clearing active filters or selecting another category to browse all 70 hand-picked streams.`}
                     </p>
-                    <button
-                      onClick={handleClearAllFilters}
-                      className="mt-5 px-4 py-2 rounded-xl bg-surface-850 hover:bg-surface-800 text-white border border-surface-700 hover:border-surface-600 text-xs font-medium transition-colors cursor-pointer shadow-sm"
-                    >
-                      Reset filters
-                    </button>
+                    <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                      <button
+                        onClick={handleClearAllFilters}
+                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-accent-500 hover:bg-accent-400 text-surface-950 text-xs font-bold transition-all cursor-pointer shadow-md hover:shadow-accent-500/20"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>Clear search & view all</span>
+                      </button>
+                      <button
+                        onClick={handleSurpriseMe}
+                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-surface-850 hover:bg-surface-800 text-slate-200 hover:text-white border border-surface-700 hover:border-surface-600 text-xs font-medium transition-all cursor-pointer"
+                      >
+                        <span>🎲 Surprise me</span>
+                      </button>
+                      <button
+                        onClick={() => setIsSuggestOpen(true)}
+                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-surface-850 hover:bg-surface-800 text-accent-400 hover:text-accent-300 border border-surface-700 hover:border-surface-600 text-xs font-medium transition-all cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Suggest a station</span>
+                      </button>
+                    </div>
                   </>
                 )}
               </div>
