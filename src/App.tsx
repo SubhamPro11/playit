@@ -24,6 +24,7 @@ import { NewsletterSection } from './components/NewsletterSection';
 import { OnboardingBanner } from './components/OnboardingBanner';
 import { RecentlyViewedSection } from './components/RecentlyViewedSection';
 import { RecommendedSection } from './components/RecommendedSection';
+import { BackToTopButton } from './components/BackToTopButton';
 import { useSiteSettings } from './hooks/useSiteSettings';
 import { useKeyboardNav } from './hooks/useKeyboardNav';
 import { useReactions } from './hooks/useReactions';
@@ -584,6 +585,9 @@ export function App() {
         onOpenAbout={() => setIsAboutOpen(true)}
         onOpenSuggest={() => setIsSuggestOpen(true)}
       />
+
+      {/* Floating Back to Top Button */}
+      <BackToTopButton />
 
       {/* Curation & About Modal */}
       <AboutModal
