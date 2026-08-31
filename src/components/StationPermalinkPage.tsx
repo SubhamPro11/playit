@@ -98,7 +98,8 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
     });
 
     // Scroll to top on page load
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const isReducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: isReducedMotion ? 'auto' : 'smooth' });
 
     return () => {
       document.title = originalTitle;

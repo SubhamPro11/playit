@@ -170,7 +170,8 @@ export function App() {
     const slug = getStationSlug(chosen.title);
     window.history.pushState({}, '', `/entry/${slug}`);
     setRouteState({ route: 'station', stationSlug: slug });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const isReducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: isReducedMotion ? 'auto' : 'smooth' });
   }, [videos, addRecentlyViewed]);
 
   // Trigger new random shuffle ordering on click
