@@ -25,6 +25,7 @@ import { OnboardingBanner } from './components/OnboardingBanner';
 import { RecentlyViewedSection } from './components/RecentlyViewedSection';
 import { RecommendedSection } from './components/RecommendedSection';
 import { BackToTopButton } from './components/BackToTopButton';
+import { FaqSection } from './components/FaqSection';
 import { useSiteSettings } from './hooks/useSiteSettings';
 import { useKeyboardNav } from './hooks/useKeyboardNav';
 import { useReactions } from './hooks/useReactions';
@@ -578,6 +579,9 @@ export function App() {
         settings={siteSettings}
         isActive={isSupportActive}
       />
+
+      {/* Expandable FAQs Section */}
+      <FaqSection />
 
       {/* Honest & Transparent Site Footer */}
       <SiteFooter
