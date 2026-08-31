@@ -8,6 +8,7 @@ export interface Video {
   accentColor?: string;
   creator?: string;
   creatorUrl?: string;
+  dateAdded?: string;
 }
 
 export interface PlaylistData {

@@ -151,11 +151,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-accent-500" />
                   <span className="text-xs uppercase text-slate-300 font-semibold tracking-wider">
-                    Spotlight #{String(currentSpotlight.orderIndex).padStart(2, '0')}
+                    Spotlight #{String(selectedSpotlightIndex + 1).padStart(2, '0')}
                   </span>
+                  {currentSpotlight.dateAdded &&
+                    Date.now() - new Date(currentSpotlight.dateAdded).getTime() <= 7 * 24 * 60 * 60 * 1000 && (
+                      <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold uppercase tracking-wider">
+                        New
+                      </span>
+                    )}
                 </div>
 
-                {/* Switcher Dots for 5 Picks with accessible touch target sizing */}
+                {/* Switcher Dots for Picks with accessible touch target sizing */}
                 <div className="flex items-center gap-1">
                   {featuredVideos.map((item, idx) => (
                     <button

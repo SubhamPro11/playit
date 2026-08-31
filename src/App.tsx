@@ -8,7 +8,7 @@ import { VideoCard } from './components/VideoCard';
 import { CategoryRow } from './components/CategoryRow';
 import { SiteFooter } from './components/SiteFooter';
 import { SortOption } from './components/SortControl';
-import { StationSubmission, CATEGORY_FALLBACK_THUMBNAILS, DEFAULT_FALLBACK_THUMBNAIL } from './types/video';
+import { Video, StationSubmission, CATEGORY_FALLBACK_THUMBNAILS, DEFAULT_FALLBACK_THUMBNAIL } from './types/video';
 import { useFavorites } from './hooks/useFavorites';
 import { useAdminAuth } from './hooks/useAdminAuth';
 import { useVideosData } from './hooks/useVideosData';
@@ -86,11 +86,37 @@ export function App() {
     return false;
   };
 
-  // Pick 5 representative featured items for hero spotlight
+  // Feature recently added entries in Spotlight (newest take rank #1 and #2), with curated fallback
   const featuredVideos = useMemo(() => {
-    const spotlightIds = ['vid-01', 'vid-04', 'vid-23', 'vid-33', 'vid-37'];
-    const found = videos.filter((v) => spotlightIds.includes(v.id));
-    return found.length > 0 ? found : videos.slice(0, 5);
+    // 1. Identify valid recent additions with dateAdded within 7-day window
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+
+    const recentEntries = videos
+      .filter((v) => {
+        if (!v.dateAdded) return false;
+        const time = new Date(v.dateAdded).getTime();
+        return !isNaN(time) && now - time <= SEVEN_DAYS_MS;
+      })
+      .sort((a, b) => new Date(b.dateAdded!).getTime() - new Date(a.dateAdded!).getTime());
+
+    // Up to 2 newest entries take #1 and #2
+    const topRecent = recentEntries.slice(0, 2);
+    const topRecentIds = new Set(topRecent.map((v) => v.id));
+
+    // Curated default fallback pool
+    const defaultSpotlightIds = ['vid-01', 'vid-04', 'vid-23', 'vid-33', 'vid-37'];
+    const curatedPool = defaultSpotlightIds
+      .map((id) => videos.find((v) => v.id === id))
+      .filter((v): v is Video => Boolean(v) && !topRecentIds.has(v!.id));
+
+    // Also include other catalog videos as extra fallback if needed
+    const remainingFallback = videos.filter(
+      (v) => !topRecentIds.has(v.id) && !curatedPool.some((c) => c.id === v.id)
+    );
+
+    const combined = [...topRecent, ...curatedPool, ...remainingFallback];
+    return combined.slice(0, 5);
   }, [videos]);
 
   // Listen to browser navigation (popstate/hashchange)

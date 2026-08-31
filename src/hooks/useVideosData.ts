@@ -45,6 +45,7 @@ export function useVideosData() {
           thumbnailUrl: row.thumbnail_url,
           category: row.category as Category,
           accentColor: row.accent_color || '#f59e0b',
+          dateAdded: row.created_at || row.date_added || undefined,
         }));
         setVideos(mapped);
         try {
@@ -191,10 +192,12 @@ export function useVideosData() {
     setError(null);
     try {
       const newId = `vid-${Date.now()}`;
+      const nowIso = new Date().toISOString();
       const videoEntry: Video = {
         ...newVideo,
         id: newId,
         accentColor: newVideo.accentColor || '#ef4444',
+        dateAdded: newVideo.dateAdded || nowIso,
       };
 
       if (isSupabaseConfigured && supabase) {
