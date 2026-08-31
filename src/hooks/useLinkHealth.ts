@@ -3,6 +3,7 @@ import { Video, LinkHealthReport, HealthStatusType } from '../types/video';
 
 const STORAGE_KEY = 'airwaves_link_health';
 const LEGACY_STORAGE_KEY = 'playit_link_health';
+const REPORTED_SESSION_KEY = 'airwaves_reported_broken_stations_v1';
 
 export function useLinkHealth() {
   const [healthMap, setHealthMap] = useState<Record<string, LinkHealthReport>>(() => {
@@ -12,6 +13,15 @@ export function useLinkHealth() {
       return stored ? JSON.parse(stored) : {};
     } catch {
       return {};
+    }
+  });
+
+  const [reportedIds, setReportedIds] = useState<string[]>(() => {
+    try {
+      const stored = sessionStorage.getItem(REPORTED_SESSION_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
     }
   });
 
@@ -27,6 +37,42 @@ export function useLinkHealth() {
       // ignore
     }
   }, []);
+
+  const hasReportedBroken = useCallback((id: string) => {
+    return reportedIds.includes(id);
+  }, [reportedIds]);
+
+  const reportBrokenLink = useCallback((video: { id: string; externalLink: string }) => {
+    if (reportedIds.includes(video.id)) return false;
+
+    const newReported = [...reportedIds, video.id];
+    setReportedIds(newReported);
+    try {
+      sessionStorage.setItem(REPORTED_SESSION_KEY, JSON.stringify(newReported));
+    } catch {
+      // ignore
+    }
+
+    const report: LinkHealthReport = {
+      videoId: video.id,
+      url: video.externalLink,
+      status: 'broken',
+      lastChecked: new Date().toISOString(),
+      error: 'Reported by visitor',
+    };
+
+    setHealthMap((prev) => {
+      const next = { ...prev, [video.id]: report };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+
+    return true;
+  }, [reportedIds]);
 
   // Check a single station link
   const checkSingleLink = useCallback(async (video: Video): Promise<LinkHealthReport> => {
@@ -153,5 +199,7 @@ export function useLinkHealth() {
     checkSingleLink,
     checkAllLinks,
     clearHealthData,
+    reportBrokenLink,
+    hasReportedBroken,
   };
 }

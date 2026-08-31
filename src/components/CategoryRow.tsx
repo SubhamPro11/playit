@@ -15,6 +15,8 @@ interface CategoryRowProps {
   hasReacted?: (id: string) => boolean;
   onAddReaction?: (id: string) => void;
   onRecordView?: (id: string) => void;
+  onReportBroken?: (video: { id: string; externalLink: string }) => boolean;
+  hasReportedBroken?: (id: string) => boolean;
 }
 
 export const CategoryRow: React.FC<CategoryRowProps> = ({
@@ -28,6 +30,8 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({
   hasReacted,
   onAddReaction,
   onRecordView,
+  onReportBroken,
+  hasReportedBroken,
 }) => {
   const rowRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -141,6 +145,8 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({
                 hasReacted={hasReacted ? hasReacted(video.id) : false}
                 onAddReaction={onAddReaction}
                 onRecordView={onRecordView}
+                onReportBroken={onReportBroken}
+                isBrokenReported={hasReportedBroken ? hasReportedBroken(video.id) : false}
               />
             </div>
           ))}

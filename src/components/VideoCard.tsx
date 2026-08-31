@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, ArrowUpRight, Info, Share2, Check } from 'lucide-react';
+import { Heart, ArrowUpRight, Info, Share2, Check, AlertCircle } from 'lucide-react';
 import { Video, getEffectiveThumbnailUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../types/video';
 import { getStationSlug } from '../utils/slug';
 
@@ -13,6 +13,8 @@ interface VideoCardProps {
   hasReacted?: boolean;
   onAddReaction?: (id: string) => void;
   onRecordView?: (id: string) => void;
+  onReportBroken?: (video: { id: string; externalLink: string }) => boolean;
+  isBrokenReported?: boolean;
 }
 
 export const VideoCard: React.FC<VideoCardProps> = ({
@@ -25,9 +27,12 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   hasReacted = false,
   onAddReaction,
   onRecordView,
+  onReportBroken,
+  isBrokenReported = false,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [reported, setReported] = useState(isBrokenReported);
   const [currentSrc, setCurrentSrc] = useState(() => getEffectiveThumbnailUrl(video));
 
   useEffect(() => {
@@ -83,6 +88,17 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy link:', err);
+    }
+  };
+
+  const handleReportClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onReportBroken) {
+      const ok = onReportBroken({ id: video.id, externalLink: video.externalLink });
+      if (ok) {
+        setReported(true);
+      }
     }
   };
 
@@ -218,6 +234,23 @@ export const VideoCard: React.FC<VideoCardProps> = ({
               {copied ? <Check className="w-2.5 h-2.5 text-emerald-400" /> : <Share2 className="w-2.5 h-2.5" />}
               <span>{copied ? 'Copied' : 'Share'}</span>
             </button>
+            {onReportBroken && (
+              <button
+                type="button"
+                onClick={handleReportClick}
+                disabled={reported || isBrokenReported}
+                title={reported || isBrokenReported ? "Report received — thank you!" : "Report dead or broken link"}
+                aria-label={reported || isBrokenReported ? "Broken link reported" : `Report broken link for ${video.title}`}
+                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] border transition-all ${
+                  reported || isBrokenReported
+                    ? 'bg-amber-500/15 text-amber-300 border-amber-500/30 cursor-default'
+                    : 'bg-surface-900 hover:bg-surface-750 text-slate-400 hover:text-amber-400 border-surface-700 cursor-pointer'
+                }`}
+              >
+                <AlertCircle className="w-2.5 h-2.5" />
+                <span>{reported || isBrokenReported ? 'Reported' : 'Report'}</span>
+              </button>
+            )}
           </div>
           <span className="inline-flex items-center gap-1 text-slate-400 group-hover:text-accent-400 transition-colors font-medium shrink-0">
             <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

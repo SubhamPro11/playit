@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { ArrowLeft, ExternalLink, Heart, Share2, Check, Radio } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Heart, Share2, Check, Radio, AlertCircle } from 'lucide-react';
 import { Video, getEffectiveThumbnailUrl } from '../types/video';
 import { BrandLogo } from './BrandLogo';
 import { VideoCard } from './VideoCard';
@@ -19,6 +19,8 @@ interface StationPermalinkPageProps {
   getReactionCount?: (id: string) => number;
   hasReactedForId?: (id: string) => boolean;
   onRecordView?: (id: string) => void;
+  onReportBroken?: (video: { id: string; externalLink: string }) => boolean;
+  isBrokenReported?: boolean;
 }
 
 export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
@@ -35,8 +37,11 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
   getReactionCount,
   hasReactedForId,
   onRecordView,
+  onReportBroken,
+  isBrokenReported = false,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [reported, setReported] = useState(isBrokenReported);
   const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
@@ -132,6 +137,15 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
     }
   };
 
+  const handleReportBroken = () => {
+    if (onReportBroken) {
+      const ok = onReportBroken({ id: video.id, externalLink: video.externalLink });
+      if (ok) {
+        setReported(true);
+      }
+    }
+  };
+
   const relatedStations = useMemo(() => {
     return allVideos
       .filter((v) => v.id !== video.id && v.category === video.category)
@@ -203,8 +217,8 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
                 <img
                   src={thumbnailUrl}
                   alt={`Cover artwork for ${video.title} on ${domain}`}
-                  className="w-full h-full object-cover"
                   onError={() => setImgError(true)}
+                  className="w-full h-full object-cover object-center"
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-surface-900 text-center">
@@ -308,7 +322,7 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
               </div>
             </div>
 
-            {/* Launch Action */}
+            {/* Launch Action & Broken Link Report */}
             <div className="space-y-3">
               <a
                 href={video.externalLink}
@@ -320,9 +334,24 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
                 <ExternalLink className="w-4 h-4" />
               </a>
 
-              <p className="text-[11px] text-center text-slate-500 font-mono">
-                Opens in a new browser tab • Zero tracking
-              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1 text-[11px] text-slate-500 font-mono">
+                <span>Opens in a new tab • Zero tracking</span>
+                {onReportBroken && (
+                  <button
+                    type="button"
+                    onClick={handleReportBroken}
+                    disabled={reported || isBrokenReported}
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded transition-colors ${
+                      reported || isBrokenReported
+                        ? 'text-amber-400 bg-amber-500/10 cursor-default'
+                        : 'text-slate-400 hover:text-amber-400 hover:underline cursor-pointer'
+                    }`}
+                  >
+                    <AlertCircle className="w-3 h-3" />
+                    <span>{reported || isBrokenReported ? 'Broken stream reported' : 'Report broken stream'}</span>
+                  </button>
+                )}
+              </div>
             </div>
 
           </div>

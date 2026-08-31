@@ -27,6 +27,7 @@ import { useSiteSettings } from './hooks/useSiteSettings';
 import { useKeyboardNav } from './hooks/useKeyboardNav';
 import { useReactions } from './hooks/useReactions';
 import { useRecentlyViewed } from './hooks/useRecentlyViewed';
+import { useLinkHealth } from './hooks/useLinkHealth';
 import { findStationBySlugOrId, getStationSlug } from './utils/slug';
 
 type AppRoute = 'public' | 'admin' | 'station' | 'not_found';
@@ -69,6 +70,7 @@ export function App() {
   const { settings: siteSettings, isSupportActive } = useSiteSettings();
   const { addReaction, hasReacted, getReactionCount } = useReactions();
   const { recentlyViewedIds, addRecentlyViewed, clearRecentlyViewed } = useRecentlyViewed();
+  const { reportBrokenLink, hasReportedBroken } = useLinkHealth();
 
   // Enable arrow-key card navigation & slash shortcut on public catalog
   useKeyboardNav(routeState.route === 'public' && !isAboutOpen && !isSuggestOpen);
@@ -297,6 +299,8 @@ export function App() {
           getReactionCount={getReactionCount}
           hasReactedForId={hasReacted}
           onRecordView={addRecentlyViewed}
+          onReportBroken={reportBrokenLink}
+          isBrokenReported={hasReportedBroken(station.id)}
         />
       );
     }
@@ -436,6 +440,8 @@ export function App() {
                     hasReacted={hasReacted(video.id)}
                     onAddReaction={addReaction}
                     onRecordView={addRecentlyViewed}
+                    onReportBroken={reportBrokenLink}
+                    isBrokenReported={hasReportedBroken(video.id)}
                   />
                 ))}
               </div>
@@ -508,6 +514,8 @@ export function App() {
                 hasReacted={hasReacted}
                 onAddReaction={addReaction}
                 onRecordView={addRecentlyViewed}
+                onReportBroken={reportBrokenLink}
+                hasReportedBroken={hasReportedBroken}
               />
             ))}
           </div>
