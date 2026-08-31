@@ -23,11 +23,14 @@ import { SupportSection } from './components/SupportSection';
 import { NewsletterSection } from './components/NewsletterSection';
 import { OnboardingBanner } from './components/OnboardingBanner';
 import { RecentlyViewedSection } from './components/RecentlyViewedSection';
+import { RecommendedSection } from './components/RecommendedSection';
 import { useSiteSettings } from './hooks/useSiteSettings';
 import { useKeyboardNav } from './hooks/useKeyboardNav';
 import { useReactions } from './hooks/useReactions';
 import { useRecentlyViewed } from './hooks/useRecentlyViewed';
 import { useLinkHealth } from './hooks/useLinkHealth';
+import { useUserAuth } from './hooks/useUserAuth';
+import { useRecommendations } from './hooks/useRecommendations';
 import { findStationBySlugOrId, getStationSlug } from './utils/slug';
 
 type AppRoute = 'public' | 'admin' | 'station' | 'not_found';
@@ -71,6 +74,13 @@ export function App() {
   const { addReaction, hasReacted, getReactionCount } = useReactions();
   const { recentlyViewedIds, addRecentlyViewed, clearRecentlyViewed } = useRecentlyViewed();
   const { reportBrokenLink, hasReportedBroken } = useLinkHealth();
+  const { user: signedInUser } = useUserAuth();
+  const { recommendedVideos, isPersonalized, topCategoryName } = useRecommendations(
+    videos,
+    favoriteIds,
+    recentlyViewedIds,
+    Boolean(signedInUser)
+  );
 
   // Enable arrow-key card navigation & slash shortcut on public catalog
   useKeyboardNav(routeState.route === 'public' && !isAboutOpen && !isSuggestOpen);
@@ -520,6 +530,24 @@ export function App() {
         ) : (
           /* VIEW 2: Default Row-Based Category Browsing */
           <div className="space-y-10 sm:space-y-14">
+            {/* Personalized Recommendations for Signed-In Listeners */}
+            {signedInUser && (
+              <RecommendedSection
+                videos={recommendedVideos}
+                isPersonalized={isPersonalized}
+                topCategoryName={topCategoryName}
+                isFavorite={isFavorite}
+                onToggleFavorite={toggleFavorite}
+                onNavigatePermalink={navigateToStation}
+                getReactionCount={getReactionCount}
+                hasReacted={hasReacted}
+                onAddReaction={addReaction}
+                onRecordView={addRecentlyViewed}
+                onReportBroken={reportBrokenLink}
+                hasReportedBroken={hasReportedBroken}
+              />
+            )}
+
             {categorizedVideos.map(({ category, videos: catVideos }) => (
               <CategoryRow
                 key={category}
