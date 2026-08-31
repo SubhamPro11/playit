@@ -15,7 +15,7 @@ if (!match) {
 let playlistData;
 try {
   const jsonLike = match[1]
-    .replace(/(title|description|videos|id|orderIndex|externalLink|thumbnailUrl|category|accentColor):/g, '"$1":');
+    .replace(/(title|description|videos|id|orderIndex|externalLink|thumbnailUrl|category|accentColor|dateAdded):/g, '"$1":');
   playlistData = JSON.parse(jsonLike);
 } catch (e) {
   console.error('Error parsing playlist data:', e);
@@ -59,9 +59,10 @@ function generateSitemap() {
   // All 70 Station Permalinks
   playlistData.videos.forEach((video) => {
     const slug = getStationSlug(video.title);
+    const lastmod = video.dateAdded ? video.dateAdded.split('T')[0] : today;
     xml += `  <url>\n`;
     xml += `    <loc>${baseUrl}/station/${slug}</loc>\n`;
-    xml += `    <lastmod>${today}</lastmod>\n`;
+    xml += `    <lastmod>${lastmod}</lastmod>\n`;
     xml += `    <changefreq>weekly</changefreq>\n`;
     xml += `    <priority>0.8</priority>\n`;
     xml += `  </url>\n`;
