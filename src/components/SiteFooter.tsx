@@ -1,5 +1,6 @@
 import React from 'react';
 import { CATEGORIES } from '../data/playlist';
+import { ThemeToggle } from './ThemeToggle';
 
 interface SiteFooterProps {
   totalVideos: number;
@@ -105,6 +106,8 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ totalVideos, onOpenAbout
           <span>No tracking</span>
           <span>·</span>
           <span>Zero ads</span>
+          <span className="hidden sm:inline">·</span>
+          <ThemeToggle />
         </div>
       </div>
     </footer>

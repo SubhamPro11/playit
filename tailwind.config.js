@@ -13,14 +13,14 @@ export default {
       },
       colors: {
         surface: {
-          950: '#090a0d',
-          900: '#0f1115',
-          850: '#14171e',
-          800: '#1a1f28',
-          750: '#222834',
-          700: '#2c3342',
-          600: '#3d4659',
-          500: '#56617a',
+          950: 'rgb(var(--surface-950) / <alpha-value>)',
+          900: 'rgb(var(--surface-900) / <alpha-value>)',
+          850: 'rgb(var(--surface-850) / <alpha-value>)',
+          800: 'rgb(var(--surface-800) / <alpha-value>)',
+          750: 'rgb(var(--surface-750) / <alpha-value>)',
+          700: 'rgb(var(--surface-700) / <alpha-value>)',
+          600: 'rgb(var(--surface-600) / <alpha-value>)',
+          500: 'rgb(var(--surface-500) / <alpha-value>)',
         },
         accent: {
           400: '#fbbf24',

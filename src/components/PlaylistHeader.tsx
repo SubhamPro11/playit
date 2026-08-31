@@ -4,6 +4,7 @@ import { BrandLogo } from './BrandLogo';
 import { SortControl, SortOption } from './SortControl';
 import { LiveVisitorsBadge } from './LiveVisitorsBadge';
 import { UserAuthControl } from './UserAuthControl';
+import { ThemeToggle } from './ThemeToggle';
 import { Category } from '../data/playlist';
 
 interface PlaylistHeaderProps {
@@ -114,6 +115,9 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
 
           {/* Optional Google Sign-In Control */}
           <UserAuthControl />
+
+          {/* Theme Dark/Light Mode Toggle */}
+          <ThemeToggle />
 
           {/* Live Listener Counter Badge */}
           <LiveVisitorsBadge />
