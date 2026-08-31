@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Send, CheckCircle2, AlertCircle, Radio } from 'lucide-react';
 import { CATEGORIES } from '../data/playlist';
+import { useToast } from './Toast';
 
 interface SuggestStationModalProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export const SuggestStationModal: React.FC<SuggestStationModalProps> = ({
   const [category, setCategory] = useState<string>('Radio & mixtapes');
   const [notes, setNotes] = useState('');
   const [honeypot, setHoneypot] = useState('');
+  const { showToast } = useToast();
   
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -70,6 +72,7 @@ export const SuggestStationModal: React.FC<SuggestStationModalProps> = ({
 
     if (result.success) {
       setFeedback({ type: 'success', message: result.message });
+      showToast('Station submitted for review! Thank you.');
       setName('');
       setUrl('');
       setNotes('');

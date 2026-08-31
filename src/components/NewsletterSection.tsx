@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Mail, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useNewsletter } from '../hooks/useNewsletter';
+import { useToast } from './Toast';
 
 export const NewsletterSection: React.FC = () => {
   const { isSubscribed, loading, error, subscribe } = useNewsletter();
   const [email, setEmail] = useState('');
   const [honeypot, setHoneypot] = useState('');
   const [feedback, setFeedback] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,9 +16,11 @@ export const NewsletterSection: React.FC = () => {
     const res = await subscribe(email, honeypot);
     if (res.success) {
       setFeedback(res.message);
+      showToast('Subscribed to Monthly Dispatch!');
       setEmail('');
     } else {
       setFeedback(res.message);
+      showToast(res.message || 'Subscription failed', 'error');
     }
   };
 

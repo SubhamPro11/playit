@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Heart, ArrowUpRight, Info, Share2, Check, AlertCircle } from 'lucide-react';
 import { Video, getEffectiveThumbnailUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../types/video';
 import { getStationSlug } from '../utils/slug';
+import { useToast } from './Toast';
 
 interface VideoCardProps {
   video: Video;
@@ -34,6 +35,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   const [copied, setCopied] = useState(false);
   const [reported, setReported] = useState(isBrokenReported);
   const [currentSrc, setCurrentSrc] = useState(() => getEffectiveThumbnailUrl(video));
+  const { showToast } = useToast();
 
   useEffect(() => {
     setCurrentSrc(getEffectiveThumbnailUrl(video));
@@ -49,6 +51,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     e.preventDefault();
     e.stopPropagation();
     onToggleFavorite(video.id);
+    showToast(isFavorite ? 'Removed from favorites' : 'Saved to favorites');
   };
 
   const handleReactionClick = (e: React.MouseEvent) => {
@@ -85,9 +88,11 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         document.body.removeChild(textarea);
       }
       setCopied(true);
+      showToast('Station link copied to clipboard!');
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy link:', err);
+      showToast('Failed to copy link', 'error');
     }
   };
 
@@ -98,6 +103,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       const ok = onReportBroken({ id: video.id, externalLink: video.externalLink });
       if (ok) {
         setReported(true);
+        showToast('Thanks for reporting! Station flagged for review.', 'info');
       }
     }
   };

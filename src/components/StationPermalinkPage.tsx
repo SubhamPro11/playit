@@ -4,6 +4,7 @@ import { Video, getEffectiveThumbnailUrl } from '../types/video';
 import { BrandLogo } from './BrandLogo';
 import { VideoCard } from './VideoCard';
 import { getStationSlug } from '../utils/slug';
+import { useToast } from './Toast';
 
 interface StationPermalinkPageProps {
   video: Video;
@@ -43,6 +44,7 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
   const [copied, setCopied] = useState(false);
   const [reported, setReported] = useState(isBrokenReported);
   const [imgError, setImgError] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     onRecordView?.(video.id);
@@ -132,9 +134,11 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
         document.body.removeChild(textarea);
       }
       setCopied(true);
+      showToast('Station permalink copied to clipboard!');
       setTimeout(() => setCopied(false), 2500);
     } catch (err) {
       console.error('Failed to copy link', err);
+      showToast('Failed to copy link', 'error');
     }
   };
 
@@ -143,6 +147,7 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
       const ok = onReportBroken({ id: video.id, externalLink: video.externalLink });
       if (ok) {
         setReported(true);
+        showToast('Thanks for reporting! Station flagged for review.', 'info');
       }
     }
   };
