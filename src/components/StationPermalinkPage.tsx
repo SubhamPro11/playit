@@ -111,12 +111,24 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
   }, [video, domain, thumbnailUrl]);
 
   const handleCopyLink = async () => {
+    const url = `https://airwaves.dpdns.org/station/${getStationSlug(video.title)}`;
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-    } catch {
-      // fallback
+    } catch (err) {
+      console.error('Failed to copy link', err);
     }
   };
 

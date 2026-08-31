@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, ArrowUpRight, Info } from 'lucide-react';
+import { Heart, ArrowUpRight, Info, Share2, Check } from 'lucide-react';
 import { Video, getEffectiveThumbnailUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../types/video';
 import { getStationSlug } from '../utils/slug';
 
@@ -27,6 +27,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   onRecordView,
 }) => {
   const [imageError, setImageError] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(() => getEffectiveThumbnailUrl(video));
 
   useEffect(() => {
@@ -58,6 +59,30 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       e.preventDefault();
       e.stopPropagation();
       onNavigatePermalink(getStationSlug(video.title));
+    }
+  };
+
+  const handleCopyLink = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const permalink = `https://airwaves.dpdns.org/station/${getStationSlug(video.title)}`;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(permalink);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = permalink;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
     }
   };
 
@@ -179,6 +204,20 @@ export const VideoCard: React.FC<VideoCardProps> = ({
                 <span>Info</span>
               </button>
             )}
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              title={copied ? "Copied to clipboard!" : "Copy station link"}
+              aria-label={copied ? "Station link copied" : `Copy link for ${video.title}`}
+              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] border transition-all cursor-pointer ${
+                copied
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 font-medium'
+                  : 'bg-surface-900 hover:bg-surface-750 text-slate-400 hover:text-white border-surface-700'
+              }`}
+            >
+              {copied ? <Check className="w-2.5 h-2.5 text-emerald-400" /> : <Share2 className="w-2.5 h-2.5" />}
+              <span>{copied ? 'Copied' : 'Share'}</span>
+            </button>
           </div>
           <span className="inline-flex items-center gap-1 text-slate-400 group-hover:text-accent-400 transition-colors font-medium shrink-0">
             <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
