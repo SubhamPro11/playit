@@ -14,6 +14,7 @@ interface CategoryRowProps {
   getReactionCount?: (id: string) => number;
   hasReacted?: (id: string) => boolean;
   onAddReaction?: (id: string) => void;
+  onRecordView?: (id: string) => void;
 }
 
 export const CategoryRow: React.FC<CategoryRowProps> = ({
@@ -26,6 +27,7 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({
   getReactionCount,
   hasReacted,
   onAddReaction,
+  onRecordView,
 }) => {
   const rowRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -138,6 +140,7 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({
                 reactionCount={getReactionCount ? getReactionCount(video.id) : 0}
                 hasReacted={hasReacted ? hasReacted(video.id) : false}
                 onAddReaction={onAddReaction}
+                onRecordView={onRecordView}
               />
             </div>
           ))}

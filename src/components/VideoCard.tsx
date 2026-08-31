@@ -12,6 +12,7 @@ interface VideoCardProps {
   reactionCount?: number;
   hasReacted?: boolean;
   onAddReaction?: (id: string) => void;
+  onRecordView?: (id: string) => void;
 }
 
 export const VideoCard: React.FC<VideoCardProps> = ({
@@ -23,6 +24,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   reactionCount = 0,
   hasReacted = false,
   onAddReaction,
+  onRecordView,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(() => getEffectiveThumbnailUrl(video));
@@ -76,6 +78,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
       href={video.externalLink}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() => onRecordView?.(video.id)}
       aria-label={`Open ${video.title} on ${domain} in a new tab`}
       title={`Open ${video.title} on ${domain} (opens in new tab)`}
       className="group flex flex-col bg-surface-850 hover:bg-surface-800 rounded-xl border border-surface-700 hover:border-surface-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-900 transition-all duration-200 overflow-hidden relative shadow-sm hover:shadow-md h-full cursor-pointer"

@@ -22,9 +22,11 @@ import { StationPermalinkPage } from './components/StationPermalinkPage';
 import { SupportSection } from './components/SupportSection';
 import { NewsletterSection } from './components/NewsletterSection';
 import { OnboardingBanner } from './components/OnboardingBanner';
+import { RecentlyViewedSection } from './components/RecentlyViewedSection';
 import { useSiteSettings } from './hooks/useSiteSettings';
 import { useKeyboardNav } from './hooks/useKeyboardNav';
 import { useReactions } from './hooks/useReactions';
+import { useRecentlyViewed } from './hooks/useRecentlyViewed';
 import { findStationBySlugOrId, getStationSlug } from './utils/slug';
 
 type AppRoute = 'public' | 'admin' | 'station' | 'not_found';
@@ -66,6 +68,7 @@ export function App() {
   const { submissions, submitStation, updateSubmissionStatus, deleteSubmission } = useSubmissions();
   const { settings: siteSettings, isSupportActive } = useSiteSettings();
   const { addReaction, hasReacted, getReactionCount } = useReactions();
+  const { recentlyViewedIds, addRecentlyViewed, clearRecentlyViewed } = useRecentlyViewed();
 
   // Enable arrow-key card navigation & slash shortcut on public catalog
   useKeyboardNav(routeState.route === 'public' && !isAboutOpen && !isSuggestOpen);
@@ -142,6 +145,10 @@ export function App() {
   const lastRandomIdRef = useRef<string | null>(null);
 
   const navigateToStation = (slug: string) => {
+    const station = findStationBySlugOrId(videos, slug);
+    if (station) {
+      addRecentlyViewed(station.id);
+    }
     window.history.pushState({}, '', `/entry/${slug}`);
     setRouteState({ route: 'station', stationSlug: slug });
   };
@@ -157,11 +164,12 @@ export function App() {
     if (!chosen) return;
 
     lastRandomIdRef.current = chosen.id;
+    addRecentlyViewed(chosen.id);
     const slug = getStationSlug(chosen.title);
     window.history.pushState({}, '', `/entry/${slug}`);
     setRouteState({ route: 'station', stationSlug: slug });
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [videos]);
+  }, [videos, addRecentlyViewed]);
 
   // Trigger new random shuffle ordering on click
   const handleShuffle = useCallback(() => {
@@ -288,6 +296,7 @@ export function App() {
           onAddReaction={addReaction}
           getReactionCount={getReactionCount}
           hasReactedForId={hasReacted}
+          onRecordView={addRecentlyViewed}
         />
       );
     }
@@ -374,6 +383,14 @@ export function App() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <OnboardingBanner totalStations={videos.length} />
         
+        {/* Recently Viewed Strip (hidden if none) */}
+        <RecentlyViewedSection
+          recentlyViewedIds={recentlyViewedIds}
+          videos={videos}
+          onNavigateStation={navigateToStation}
+          onClear={clearRecentlyViewed}
+        />
+        
         {/* VIEW 1: Filtered / Search / Sorted Flat Grid Mode */}
         {isFilteredGridView ? (
           <div>
@@ -418,6 +435,7 @@ export function App() {
                     reactionCount={getReactionCount(video.id)}
                     hasReacted={hasReacted(video.id)}
                     onAddReaction={addReaction}
+                    onRecordView={addRecentlyViewed}
                   />
                 ))}
               </div>
@@ -489,6 +507,7 @@ export function App() {
                 getReactionCount={getReactionCount}
                 hasReacted={hasReacted}
                 onAddReaction={addReaction}
+                onRecordView={addRecentlyViewed}
               />
             ))}
           </div>

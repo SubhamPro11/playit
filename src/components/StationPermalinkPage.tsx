@@ -18,6 +18,7 @@ interface StationPermalinkPageProps {
   onAddReaction?: (id: string) => void;
   getReactionCount?: (id: string) => number;
   hasReactedForId?: (id: string) => boolean;
+  onRecordView?: (id: string) => void;
 }
 
 export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
@@ -33,9 +34,14 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
   onAddReaction,
   getReactionCount,
   hasReactedForId,
+  onRecordView,
 }) => {
   const [copied, setCopied] = useState(false);
   const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    onRecordView?.(video.id);
+  }, [video.id, onRecordView]);
 
   const domain = video.externalLink
     .replace(/^https?:\/\//, '')
