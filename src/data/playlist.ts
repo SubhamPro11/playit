@@ -30,7 +30,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-02",
     "orderIndex": 2,
     "title": "DJ Rakesh Sound System",
-    "externalLink": "http://djrakes.runable.site",
+    "externalLink": "https://djrakes.runable.site",
     "thumbnailUrl": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80",
     "category": "Folk & regional",
     "accentColor": "#ef4444"
@@ -48,7 +48,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-04",
     "orderIndex": 4,
     "title": "Roadways Bus Express",
-    "externalLink": "http://roadways.wtf",
+    "externalLink": "https://roadways.wtf",
     "thumbnailUrl": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80",
     "category": "Travel & transit",
     "accentColor": "#10b981"
@@ -57,7 +57,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-05",
     "orderIndex": 5,
     "title": "Safar-E-UP Highway Mixtape",
-    "externalLink": "http://safar-e-up.vercel.app",
+    "externalLink": "https://safar-e-up.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80",
     "category": "Travel & transit",
     "accentColor": "#eab308"
@@ -66,7 +66,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-06",
     "orderIndex": 6,
     "title": "Horn OK Please Truck Vibe",
-    "externalLink": "http://horn-ok-please-gray.vercel.app",
+    "externalLink": "https://horn-ok-please-gray.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=80",
     "category": "Travel & transit",
     "accentColor": "#f97316"
@@ -75,7 +75,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-07",
     "orderIndex": 7,
     "title": "Safar FM Midnight Drive",
-    "externalLink": "http://safarfm.vercel.app",
+    "externalLink": "https://safarfm.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80",
     "category": "Radio & mixtapes",
     "accentColor": "#818cf8"
@@ -84,7 +84,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-08",
     "orderIndex": 8,
     "title": "Chhath Puja Radio",
-    "externalLink": "http://chhathpujaradio.vercel.app",
+    "externalLink": "https://chhathpujaradio.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=800&q=80",
     "category": "Devotional & spiritual",
     "accentColor": "#fb923c"
@@ -93,7 +93,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-09",
     "orderIndex": 9,
     "title": "Seven Sisters FM",
-    "externalLink": "http://seven-sisters-fm.pages.dev",
+    "externalLink": "https://seven-sisters-fm.pages.dev",
     "thumbnailUrl": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
     "category": "Radio & mixtapes",
     "accentColor": "#34d399"
@@ -102,7 +102,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-10",
     "orderIndex": 10,
     "title": "Haryana Roadways Express",
-    "externalLink": "http://haryanaroadways.wtf",
+    "externalLink": "https://haryanaroadways.wtf",
     "thumbnailUrl": "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=800&q=80",
     "category": "Travel & transit",
     "accentColor": "#60a5fa"
@@ -111,7 +111,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-11",
     "orderIndex": 11,
     "title": "Kassita Analog Mixtape",
-    "externalLink": "http://kassita.xyz",
+    "externalLink": "https://kassita.xyz",
     "thumbnailUrl": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
     "category": "Radio & mixtapes",
     "accentColor": "#a78bfa"
@@ -129,7 +129,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-13",
     "orderIndex": 13,
     "title": "Pind Radio Punjab",
-    "externalLink": "http://pind-radio.vercel.app",
+    "externalLink": "https://pind-radio.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
     "category": "Radio & mixtapes",
     "accentColor": "#ca8a04"
@@ -138,7 +138,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-14",
     "orderIndex": 14,
     "title": "Punjabi Wedding Dhol DJ",
-    "externalLink": "http://punjabi-wedding-dj.vercel.app",
+    "externalLink": "https://punjabi-wedding-dj.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=800&q=80",
     "category": "Folk & regional",
     "accentColor": "#ec4899"
@@ -147,7 +147,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-15",
     "orderIndex": 15,
     "title": "Sharod Adda Kolkata Chai",
-    "externalLink": "http://sharod-adda.vercel.app",
+    "externalLink": "https://sharod-adda.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
     "category": "Folk & regional",
     "accentColor": "#065f46"
@@ -156,7 +156,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-16",
     "orderIndex": 16,
     "title": "Sindhu Aamu Coastal Radio",
-    "externalLink": "http://sindhuahamu.vercel.app",
+    "externalLink": "https://sindhuahamu.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=800&q=80",
     "category": "Classical & instrumental",
     "accentColor": "#0284c7"
@@ -174,7 +174,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-18",
     "orderIndex": 18,
     "title": "Aakhri Jaam Late Night Ghazal",
-    "externalLink": "http://aakhri-jaam.vercel.app",
+    "externalLink": "https://aakhri-jaam.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=800&q=80",
     "category": "Ambient & mood",
     "accentColor": "#831843"
@@ -192,7 +192,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-20",
     "orderIndex": 20,
     "title": "Majdoor Folk Anthems",
-    "externalLink": "http://majdoor-ashy.vercel.app",
+    "externalLink": "https://majdoor-ashy.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
     "category": "Folk & regional",
     "accentColor": "#b45309"
@@ -201,7 +201,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-21",
     "orderIndex": 21,
     "title": "Rearview Twilight Drive",
-    "externalLink": "http://rearview-jade.vercel.app",
+    "externalLink": "https://rearview-jade.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=800&q=80",
     "category": "Travel & transit",
     "accentColor": "#64748b"
@@ -210,7 +210,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-22",
     "orderIndex": 22,
     "title": "Kappiyum Paattum Kerala Rain",
-    "externalLink": "http://kappiyumpaattum.vercel.app",
+    "externalLink": "https://kappiyumpaattum.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80",
     "category": "Folk & regional",
     "accentColor": "#047857"
@@ -241,7 +241,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-25",
     "orderIndex": 25,
     "title": "Truck Play GT Road",
-    "externalLink": "http://truck-play.netlify.app",
+    "externalLink": "https://truck-play.netlify.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&w=800&q=80",
     "category": "Travel & transit",
     "accentColor": "#ea580c"
@@ -259,7 +259,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-27",
     "orderIndex": 27,
     "title": "Ilaiyaraaja Maestro Harmonies",
-    "externalLink": "http://ilaya-raja.vercel.app",
+    "externalLink": "https://ilaya-raja.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=800&q=80",
     "category": "Classical & instrumental",
     "accentColor": "#6366f1"
@@ -277,7 +277,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-29",
     "orderIndex": 29,
     "title": "Caravan Vintage Classics",
-    "externalLink": "http://caravan.naveengumaste.me",
+    "externalLink": "https://caravan.naveengumaste.me",
     "thumbnailUrl": "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80",
     "category": "Nostalgia & retro",
     "accentColor": "#d97706",
@@ -297,7 +297,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-31",
     "orderIndex": 31,
     "title": "Chhatt Sacred Sunrise",
-    "externalLink": "http://chhatt.vercel.app",
+    "externalLink": "https://chhatt.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?auto=format&fit=crop&w=800&q=80",
     "category": "Devotional & spiritual",
     "accentColor": "#f59e0b"
@@ -306,7 +306,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-32",
     "orderIndex": 32,
     "title": "Bhakti Sagar Morning Prayers",
-    "externalLink": "http://bhaktisagar.netlify.app",
+    "externalLink": "https://bhaktisagar.netlify.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=800&q=80",
     "category": "Devotional & spiritual",
     "accentColor": "#fb923c"
@@ -315,7 +315,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-33",
     "orderIndex": 33,
     "title": "90s TV Doordarshan Nostalgia",
-    "externalLink": "http://90stv.vercel.app",
+    "externalLink": "https://90stv.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=800&q=80",
     "category": "Nostalgia & retro",
     "accentColor": "#3b82f6"
@@ -324,7 +324,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-34",
     "orderIndex": 34,
     "title": "Bhojpuri Raat Folk Rhythms",
-    "externalLink": "http://bhojpuri-raat.vercel.app",
+    "externalLink": "https://bhojpuri-raat.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80",
     "category": "Folk & regional",
     "accentColor": "#b91c1c"
@@ -342,7 +342,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-36",
     "orderIndex": 36,
     "title": "Telugu Nostalgia Jnapakalu",
-    "externalLink": "http://telugu-nostalgia-jnapakalu.netlify.app",
+    "externalLink": "https://telugu-nostalgia-jnapakalu.netlify.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80",
     "category": "Folk & regional",
     "accentColor": "#eab308"
@@ -380,7 +380,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-40",
     "orderIndex": 40,
     "title": "Digital Bus Interstate Beats",
-    "externalLink": "http://digitalbus.me",
+    "externalLink": "https://digitalbus.me",
     "thumbnailUrl": "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=80",
     "category": "Travel & transit",
     "accentColor": "#0284c7"
@@ -389,7 +389,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-41",
     "orderIndex": 41,
     "title": "Baraat Band Brass Trumpets",
-    "externalLink": "http://baraat-band.vercel.app",
+    "externalLink": "https://baraat-band.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80",
     "category": "Folk & regional",
     "accentColor": "#e11d48"
@@ -398,7 +398,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-42",
     "orderIndex": 42,
     "title": "Nostalgic List 90s Memories",
-    "externalLink": "http://nostalgiclist.vercel.app",
+    "externalLink": "https://nostalgiclist.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=800&q=80",
     "category": "Nostalgia & retro",
     "accentColor": "#ca8a04"
@@ -425,7 +425,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-45",
     "orderIndex": 45,
     "title": "Chhath Puja Devotional Archive",
-    "externalLink": "http://chhathpuja-ten.vercel.app",
+    "externalLink": "https://chhathpuja-ten.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
     "category": "Devotional & spiritual",
     "accentColor": "#f97316"
@@ -434,7 +434,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-46",
     "orderIndex": 46,
     "title": "UK Roadways Mountain Bus",
-    "externalLink": "http://ukroadways.vercel.app",
+    "externalLink": "https://ukroadways.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1532375810709-75b1da00537c?auto=format&fit=crop&w=800&q=80",
     "category": "Travel & transit",
     "accentColor": "#0d9488"
@@ -443,7 +443,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-47",
     "orderIndex": 47,
     "title": "School Ke Baad 90s Afternoon",
-    "externalLink": "http://schoolkebaad.fun",
+    "externalLink": "https://schoolkebaad.fun",
     "thumbnailUrl": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
     "category": "Nostalgia & retro",
     "accentColor": "#3b82f6"
@@ -452,7 +452,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-48",
     "orderIndex": 48,
     "title": "Train Window Sleeper Berth",
-    "externalLink": "http://train.hereco.xyz",
+    "externalLink": "https://train.hereco.xyz",
     "thumbnailUrl": "https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=800&q=80",
     "category": "Travel & transit",
     "accentColor": "#0284c7",
@@ -472,7 +472,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-50",
     "orderIndex": 50,
     "title": "Woh Yaadein 2000s Pop",
-    "externalLink": "http://wohyaadein.lovable.app",
+    "externalLink": "https://wohyaadein.lovable.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=800&q=80",
     "category": "Nostalgia & retro",
     "accentColor": "#ec4899"
@@ -481,7 +481,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-51",
     "orderIndex": 51,
     "title": "Auto Waala City Rickshaw",
-    "externalLink": "http://auto-waala-beta.vercel.app",
+    "externalLink": "https://auto-waala-beta.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=800&q=80",
     "category": "Travel & transit",
     "accentColor": "#eab308"
@@ -490,7 +490,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-52",
     "orderIndex": 52,
     "title": "Bartan Wali Sunday Kitchen",
-    "externalLink": "http://bartan-wali-playlist.vercel.app",
+    "externalLink": "https://bartan-wali-playlist.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=800&q=80",
     "category": "Nostalgia & retro",
     "accentColor": "#64748b"
@@ -499,7 +499,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-53",
     "orderIndex": 53,
     "title": "Conductor FM Whistle & Beats",
-    "externalLink": "http://conductor-fm.nikhilkumar007.com",
+    "externalLink": "https://conductor-fm.nikhilkumar007.com",
     "thumbnailUrl": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80",
     "category": "Radio & mixtapes",
     "accentColor": "#10b981",
@@ -510,7 +510,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-54",
     "orderIndex": 54,
     "title": "Padayappa Superstar Elevation",
-    "externalLink": "http://padayappa.vercel.app",
+    "externalLink": "https://padayappa.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
     "category": "Ambient & mood",
     "accentColor": "#f59e0b"
@@ -519,7 +519,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-55",
     "orderIndex": 55,
     "title": "Mehfil Midnight Classical",
-    "externalLink": "http://mehfil-wtf.vercel.app",
+    "externalLink": "https://mehfil-wtf.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=800&q=80",
     "category": "Classical & instrumental",
     "accentColor": "#831843"
@@ -537,7 +537,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-57",
     "orderIndex": 57,
     "title": "Mi Marathi Natya Sangeet",
-    "externalLink": "http://mi-marathi.vercel.app",
+    "externalLink": "https://mi-marathi.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80",
     "category": "Folk & regional",
     "accentColor": "#ca8a04"
@@ -546,7 +546,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-58",
     "orderIndex": 58,
     "title": "Desi Radio Transistor",
-    "externalLink": "http://site-final-lyart.vercel.app",
+    "externalLink": "https://site-final-lyart.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=800&q=80",
     "category": "Radio & mixtapes",
     "accentColor": "#0284c7"
@@ -564,7 +564,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-60",
     "orderIndex": 60,
     "title": "90s Hits Golden Era",
-    "externalLink": "http://90s-hits.vercel.app",
+    "externalLink": "https://90s-hits.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?auto=format&fit=crop&w=800&q=80",
     "category": "Nostalgia & retro",
     "accentColor": "#f59e0b"
@@ -573,7 +573,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-61",
     "orderIndex": 61,
     "title": "Calm Waiting Ambient Rain",
-    "externalLink": "http://calm-dental-waiting.lovable.app",
+    "externalLink": "https://calm-dental-waiting.lovable.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=800&q=80",
     "category": "Ambient & mood",
     "accentColor": "#38bdf8"
@@ -582,7 +582,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-62",
     "orderIndex": 62,
     "title": "Chhath Geet Folk Archive",
-    "externalLink": "http://chhath-geet.netlify.app",
+    "externalLink": "https://chhath-geet.netlify.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?auto=format&fit=crop&w=800&q=80",
     "category": "Devotional & spiritual",
     "accentColor": "#ea580c"
@@ -591,7 +591,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-63",
     "orderIndex": 63,
     "title": "Nani Ka Ghar Childhood Vacation",
-    "externalLink": "http://nani-ka-ghar.vercel.app",
+    "externalLink": "https://nani-ka-ghar.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80",
     "category": "Nostalgia & retro",
     "accentColor": "#f97316"
@@ -600,7 +600,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-64",
     "orderIndex": 64,
     "title": "Sukoon Acoustic Peace",
-    "externalLink": "http://sukoon-old-songs.vercel.app",
+    "externalLink": "https://sukoon-old-songs.vercel.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?auto=format&fit=crop&w=800&q=80",
     "category": "Ambient & mood",
     "accentColor": "#34d399"
@@ -618,7 +618,7 @@ export const PLAYLIST: PlaylistData = {
     "id": "vid-66",
     "orderIndex": 66,
     "title": "Deshbhakti Patriotic Radio",
-    "externalLink": "http://deshbhaktiradio.netlify.app",
+    "externalLink": "https://deshbhaktiradio.netlify.app",
     "thumbnailUrl": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=800&q=80",
     "category": "Devotional & spiritual",
     "accentColor": "#2563eb"

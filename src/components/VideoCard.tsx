@@ -85,7 +85,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         {!imageError ? (
           <img
             src={currentSrc}
-            alt={video.title}
+            alt={`Broadcast artwork for ${video.title} (${video.category})`}
             width={640}
             height={360}
             loading="lazy"

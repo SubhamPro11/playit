@@ -43,7 +43,7 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
 
   const thumbnailUrl = getEffectiveThumbnailUrl(video);
 
-  // Dynamic SEO meta tags per station
+  // Dynamic SEO meta tags and structured data per station
   useEffect(() => {
     const originalTitle = document.title;
     document.title = `${video.title} — Airwaves Curated Audio Showcase`;
@@ -58,6 +58,34 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
       );
     }
 
+    // Update canonical URL dynamically for station permalink
+    const canonical = document.querySelector('link[rel="canonical"]');
+    const prevCanonical = canonical?.getAttribute('href') || 'https://airwaves.dpdns.org/';
+    const currentPermalink = `https://airwaves.dpdns.org/station/${getStationSlug(video.title)}`;
+    if (canonical) {
+      canonical.setAttribute('href', currentPermalink);
+    }
+
+    // Dynamic JSON-LD for Station
+    const scriptId = 'station-jsonld';
+    let scriptEl = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (!scriptEl) {
+      scriptEl = document.createElement('script');
+      scriptEl.id = scriptId;
+      scriptEl.type = 'application/ld+json';
+      document.head.appendChild(scriptEl);
+    }
+    scriptEl.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'RadioBroadcastService',
+      'name': video.title,
+      'url': currentPermalink,
+      'sameAs': video.externalLink,
+      'image': thumbnailUrl,
+      'genre': video.category,
+      'inLanguage': 'en'
+    });
+
     // Scroll to top on page load
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -66,8 +94,15 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
       if (metaDesc && prevDesc) {
         metaDesc.setAttribute('content', prevDesc);
       }
+      if (canonical && prevCanonical) {
+        canonical.setAttribute('href', prevCanonical);
+      }
+      const existingScript = document.getElementById(scriptId);
+      if (existingScript) {
+        existingScript.remove();
+      }
     };
-  }, [video, domain]);
+  }, [video, domain, thumbnailUrl]);
 
   const handleCopyLink = async () => {
     try {
@@ -149,7 +184,7 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
               {!imgError ? (
                 <img
                   src={thumbnailUrl}
-                  alt={video.title}
+                  alt={`Cover artwork for ${video.title} on ${domain}`}
                   className="w-full h-full object-cover"
                   onError={() => setImgError(true)}
                 />

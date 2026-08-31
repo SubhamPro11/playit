@@ -180,7 +180,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black border border-surface-700 group">
                 <img
                   src={getEffectiveThumbnailUrl(currentSpotlight)}
-                  alt={currentSpotlight.title}
+                  alt={`Featured spotlight broadcast: ${currentSpotlight.title} (${currentSpotlight.category})`}
                   width={640}
                   height={360}
                   loading="eager"

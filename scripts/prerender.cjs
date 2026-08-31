@@ -32,20 +32,64 @@ const CATEGORIES = [
   'Ambient & mood'
 ];
 
+function getStationSlug(title) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function generateSitemap() {
+  const baseUrl = 'https://airwaves.dpdns.org';
+  const today = new Date().toISOString().split('T')[0];
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  
+  // Homepage
+  xml += `  <url>\n`;
+  xml += `    <loc>${baseUrl}/</loc>\n`;
+  xml += `    <lastmod>${today}</lastmod>\n`;
+  xml += `    <changefreq>daily</changefreq>\n`;
+  xml += `    <priority>1.0</priority>\n`;
+  xml += `  </url>\n`;
+
+  // All 70 Station Permalinks
+  playlistData.videos.forEach((video) => {
+    const slug = getStationSlug(video.title);
+    xml += `  <url>\n`;
+    xml += `    <loc>${baseUrl}/station/${slug}</loc>\n`;
+    xml += `    <lastmod>${today}</lastmod>\n`;
+    xml += `    <changefreq>weekly</changefreq>\n`;
+    xml += `    <priority>0.8</priority>\n`;
+    xml += `  </url>\n`;
+  });
+
+  xml += `</urlset>\n`;
+  return xml;
+}
+
 function generateStructuredData() {
+  const baseUrl = 'https://airwaves.dpdns.org';
   const itemListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     'name': '70 Independent Audio & Web Radio Projects',
     'description': 'A curated sequence of independent web radio, ambient soundscapes, highway bus mixtapes, and cultural music projects.',
     'numberOfItems': playlistData.videos.length,
-    'itemListElement': playlistData.videos.map((video) => ({
-      '@type': 'ListItem',
-      'position': video.orderIndex,
-      'name': video.title,
-      'url': video.externalLink,
-      'image': video.thumbnailUrl
-    }))
+    'itemListElement': playlistData.videos.map((video) => {
+      const slug = getStationSlug(video.title);
+      return {
+        '@type': 'ListItem',
+        'position': video.orderIndex,
+        'name': video.title,
+        'url': `${baseUrl}/station/${slug}`,
+        'sameAs': video.externalLink,
+        'image': video.thumbnailUrl
+      };
+    })
   };
 
   return `<!-- Schema.org ItemList -->
@@ -68,7 +112,7 @@ function generatePrerenderedHTML() {
       return `
         <article id="track-${video.id}" class="video-prerender-card" style="display:flex; flex-direction:column; background:#111114; border:1px solid #27272a; border-radius:1rem; overflow:hidden; margin-bottom:1rem;">
           <div style="aspect-ratio:16/9; background:#000; position:relative; overflow:hidden;">
-            <img src="${video.thumbnailUrl}" alt="${video.title}" width="640" height="360" loading="lazy" style="width:100%; height:100%; object-fit:cover;" />
+            <img src="${video.thumbnailUrl}" alt="Broadcast artwork for ${video.title} (${video.category})" width="640" height="360" loading="lazy" style="width:100%; height:100%; object-fit:cover;" />
           </div>
           <div style="padding:1rem; flex:1; display:flex; flex-direction:column; justify-content:space-between;">
             <h3 style="color:#fff; font-size:1.125rem; font-weight:600; margin:0 0 0.5rem 0;">
@@ -147,6 +191,18 @@ function injectPrerender(filePath) {
   console.log(`Successfully injected structured data and prerendered markup into ${path.basename(filePath)}!`);
 }
 
-// Only inject into built production bundle
+// 1. Generate XML Sitemap with all 70 station permalinks
+const sitemapXml = generateSitemap();
+const publicSitemapPath = path.resolve(__dirname, '../public/sitemap.xml');
+const distSitemapPath = path.resolve(__dirname, '../dist/sitemap.xml');
+fs.writeFileSync(publicSitemapPath, sitemapXml, 'utf8');
+console.log('Successfully updated public/sitemap.xml with 70 station permalinks!');
+if (fs.existsSync(path.resolve(__dirname, '../dist'))) {
+  fs.writeFileSync(distSitemapPath, sitemapXml, 'utf8');
+  console.log('Successfully updated dist/sitemap.xml with 70 station permalinks!');
+}
+
+// 2. Only inject into built production bundle
 const distIndexPath = path.resolve(__dirname, '../dist/index.html');
 injectPrerender(distIndexPath);
+
