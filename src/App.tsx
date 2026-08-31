@@ -21,6 +21,7 @@ import { SuggestStationModal } from './components/SuggestStationModal';
 import { StationPermalinkPage } from './components/StationPermalinkPage';
 import { SupportSection } from './components/SupportSection';
 import { NewsletterSection } from './components/NewsletterSection';
+import { OnboardingBanner } from './components/OnboardingBanner';
 import { useSiteSettings } from './hooks/useSiteSettings';
 import { useKeyboardNav } from './hooks/useKeyboardNav';
 import { useReactions } from './hooks/useReactions';
@@ -371,6 +372,7 @@ export function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <OnboardingBanner totalStations={videos.length} />
         
         {/* VIEW 1: Filtered / Search / Sorted Flat Grid Mode */}
         {isFilteredGridView ? (
