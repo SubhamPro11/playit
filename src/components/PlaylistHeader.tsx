@@ -3,6 +3,7 @@ import { Heart } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { SortControl, SortOption } from './SortControl';
 import { LiveVisitorsBadge } from './LiveVisitorsBadge';
+import { UserAuthControl } from './UserAuthControl';
 import { Category } from '../data/playlist';
 
 interface PlaylistHeaderProps {
@@ -110,6 +111,9 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
               </span>
             )}
           </button>
+
+          {/* Optional Google Sign-In Control */}
+          <UserAuthControl />
 
           {/* Live Listener Counter Badge */}
           <LiveVisitorsBadge />
