@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
-import { Heart, Menu, X, Plus, Info } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Heart, Menu, X, Plus, Info, Star } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { SortControl, SortOption } from './SortControl';
 import { LiveVisitorsBadge } from './LiveVisitorsBadge';
 import { UserAuthControl } from './UserAuthControl';
 import { ThemeToggle } from './ThemeToggle';
 import { Category } from '../data/playlist';
+
+const REPO_URL = 'https://github.com/SubhamPro11/playit';
+const CACHE_KEY = 'airwaves_github_stars_cache';
+const REPO_API_URL = 'https://api.github.com/repos/SubhamPro11/playit';
 
 interface PlaylistHeaderProps {
   totalItems: number;
@@ -32,12 +36,46 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
   currentSort,
   onSelectSort,
   onShuffle,
-  onSurpriseMe,
   onOpenAbout,
   onOpenSuggest,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [starCount, setStarCount] = useState<number | null>(null);
   const isFiltered = selectedCategory !== 'All' || favoritesOnly;
+
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Date.now() - parsed.timestamp < 30 * 60 * 1000 && typeof parsed.count === 'number') {
+          setStarCount(parsed.count);
+          return;
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    fetch(REPO_API_URL)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && typeof data.stargazers_count === 'number') {
+          setStarCount(data.stargazers_count);
+          try {
+            localStorage.setItem(
+              CACHE_KEY,
+              JSON.stringify({ count: data.stargazers_count, timestamp: Date.now() })
+            );
+          } catch {
+            // ignore
+          }
+        }
+      })
+      .catch(() => {
+        // silently fallback
+      });
+  }, []);
 
   const handleMobileAction = (action: () => void) => {
     action();
@@ -54,18 +92,22 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
         {/* Desktop Controls Toolbar */}
         <div className="hidden md:flex items-center gap-2 sm:gap-2.5 flex-wrap justify-end">
           
-          {/* Surprise Me Random Picker Button */}
-          {onSurpriseMe && (
-            <button
-              type="button"
-              onClick={onSurpriseMe}
-              title="Pick a random station from the 70 feeds"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-semibold text-accent-400 hover:text-white bg-accent-500/10 hover:bg-accent-500 border border-accent-500/30 hover:border-accent-400 transition-all cursor-pointer shadow-xs group"
-            >
-              <span className="text-sm transition-transform group-hover:rotate-12">🎲</span>
-              <span className="hidden lg:inline group-hover:text-surface-950">Surprise me</span>
-            </button>
-          )}
+          {/* Star on GitHub Button */}
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Star Airwaves on GitHub"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-surface-850 hover:bg-surface-800 border border-surface-700 hover:border-accent-500/50 transition-all cursor-pointer group"
+          >
+            <Star className="w-3.5 h-3.5 text-slate-400 group-hover:text-accent-400 transition-colors" />
+            <span>Star</span>
+            {starCount !== null && (
+              <span className="px-1.5 py-0.2 rounded-full bg-accent-500/20 text-accent-300 text-[10px] font-bold font-mono">
+                {starCount}
+              </span>
+            )}
+          </a>
 
           {/* Suggest Station Button */}
           {onOpenSuggest && (
@@ -172,16 +214,16 @@ export const PlaylistHeader: React.FC<PlaylistHeaderProps> = ({
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            {onSurpriseMe && (
-              <button
-                type="button"
-                onClick={() => handleMobileAction(onSurpriseMe)}
-                className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-accent-500/10 hover:bg-accent-500 text-accent-400 hover:text-surface-950 font-bold text-xs border border-accent-500/30 transition-all cursor-pointer"
-              >
-                <span>🎲</span>
-                <span>Surprise me</span>
-              </button>
-            )}
+            <a
+              href={REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-surface-850 text-slate-300 hover:text-white font-medium text-xs border border-surface-700 hover:border-accent-500/50 transition-all cursor-pointer"
+            >
+              <Star className="w-3.5 h-3.5 text-accent-400" />
+              <span>Star {starCount !== null ? `(${starCount})` : ''}</span>
+            </a>
 
             <button
               type="button"
