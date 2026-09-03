@@ -20,6 +20,7 @@ import { NotFoundPage } from './components/NotFoundPage';
 import { SuggestStationModal } from './components/SuggestStationModal';
 import { StationPermalinkPage } from './components/StationPermalinkPage';
 import { SupportSection } from './components/SupportSection';
+import { StarCTA } from './components/StarCTA';
 import { NewsletterSection } from './components/NewsletterSection';
 import { OnboardingBanner } from './components/OnboardingBanner';
 import { RecentlyViewedSection } from './components/RecentlyViewedSection';
@@ -573,6 +574,9 @@ export function App() {
 
       {/* Monthly Newsletter Dispatch Section */}
       <NewsletterSection />
+
+      {/* GitHub Open Source & Early Access Star CTA */}
+      <StarCTA />
 
       {/* Admin-Configurable "Support Me" QR Section */}
       <SupportSection
