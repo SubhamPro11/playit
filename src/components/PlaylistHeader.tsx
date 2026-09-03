@@ -7,9 +7,9 @@ import { UserAuthControl } from './UserAuthControl';
 import { ThemeToggle } from './ThemeToggle';
 import { Category } from '../data/playlist';
 
-const REPO_URL = 'https://github.com/SubhamPro11/playit';
+const REPO_URL = 'https://github.com/SubhamPro11/airwaves';
 const CACHE_KEY = 'airwaves_github_stars_cache';
-const REPO_API_URL = 'https://api.github.com/repos/SubhamPro11/playit';
+const REPO_API_URL = 'https://api.github.com/repos/SubhamPro11/airwaves';
 
 interface PlaylistHeaderProps {
   totalItems: number;

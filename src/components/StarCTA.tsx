@@ -3,8 +3,8 @@ import { Star, ExternalLink, X, Radio } from 'lucide-react';
 
 const STORAGE_KEY = 'airwaves_star_cta_dismissed_v1';
 const CACHE_KEY = 'airwaves_github_stars_cache';
-const REPO_URL = 'https://github.com/SubhamPro11/playit';
-const REPO_API_URL = 'https://api.github.com/repos/SubhamPro11/playit';
+const REPO_URL = 'https://github.com/SubhamPro11/airwaves';
+const REPO_API_URL = 'https://api.github.com/repos/SubhamPro11/airwaves';
 
 interface StarCTACache {
   count: number;
