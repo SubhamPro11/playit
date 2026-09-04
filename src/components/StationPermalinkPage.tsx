@@ -3,6 +3,7 @@ import { ArrowLeft, ExternalLink, Heart, Share2, Check, Radio, AlertCircle } fro
 import { Video, getEffectiveThumbnailUrl } from '../types/video';
 import { BrandLogo } from './BrandLogo';
 import { VideoCard } from './VideoCard';
+import { AmbientBackground } from './AmbientBackground';
 import { getStationSlug } from '../utils/slug';
 import { useToast } from './Toast';
 
@@ -159,7 +160,8 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
   }, [allVideos, video]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-surface-950 text-slate-100 font-sans selection:bg-accent-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-surface-950 text-slate-100 font-sans selection:bg-accent-500 selection:text-white relative overflow-x-hidden">
+      <AmbientBackground />
       {/* Top Header Navigation */}
       <header className="sticky top-0 z-40 bg-surface-900/90 backdrop-blur-md border-b border-surface-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">

@@ -26,6 +26,7 @@ import { OnboardingBanner } from './components/OnboardingBanner';
 import { RecentlyViewedSection } from './components/RecentlyViewedSection';
 import { RecommendedSection } from './components/RecommendedSection';
 import { BackToTopButton } from './components/BackToTopButton';
+import { AmbientBackground } from './components/AmbientBackground';
 import { FaqSection } from './components/FaqSection';
 import { useSiteSettings } from './hooks/useSiteSettings';
 import { useKeyboardNav } from './hooks/useKeyboardNav';
@@ -360,7 +361,10 @@ export function App() {
 
   // --- Public Single Playlist View ---
   return (
-    <div className="min-h-screen flex flex-col bg-surface-900 text-slate-200 font-sans">
+    <div className="min-h-screen flex flex-col bg-surface-900 text-slate-200 font-sans relative overflow-x-hidden">
+      {/* Subtle GPU-Accelerated Ambient Light Bloom Motion */}
+      <AmbientBackground />
+
       {/* Sticky Header with Brand Logo and Controls */}
       <PlaylistHeader
         totalItems={videos.length}

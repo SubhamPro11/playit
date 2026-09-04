@@ -114,6 +114,45 @@
   scrollbar-width: none;
 }
 
+/* Ambient Glow Motion */
+@keyframes ambientDrift1 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(5vw, 4vh, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(-3vw, 7vh, 0) scale(0.96);
+  }
+}
+
+@keyframes ambientDrift2 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-4vw, -5vh, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(6vw, -3vh, 0) scale(0.94);
+  }
+}
+
+.ambient-glow-1 {
+  animation: ambientDrift1 34s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.ambient-glow-2 {
+  animation: ambientDrift2 46s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.light .ambient-background {
+  opacity: 0.15;
+}
+
 /* Respect visitor's reduced motion system preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -124,5 +163,12 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  .ambient-glow-1,
+  .ambient-glow-2 {
+    animation: none !important;
+    transform: none !important;
+  }
 }
+
 

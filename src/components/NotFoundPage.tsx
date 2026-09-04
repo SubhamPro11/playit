@@ -1,6 +1,7 @@
 import React from 'react';
 import { Radio, ArrowLeft, Home } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
+import { AmbientBackground } from './AmbientBackground';
 
 interface NotFoundPageProps {
   onBackToHome: () => void;
@@ -8,7 +9,8 @@ interface NotFoundPageProps {
 
 export const NotFoundPage: React.FC<NotFoundPageProps> = ({ onBackToHome }) => {
   return (
-    <div className="min-h-screen flex flex-col bg-surface-900 text-slate-200 font-sans">
+    <div className="min-h-screen flex flex-col bg-surface-900 text-slate-200 font-sans relative overflow-x-hidden">
+      <AmbientBackground />
       {/* Minimal Header */}
       <header className="border-b border-surface-700 bg-surface-900/95 py-3 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
