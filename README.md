@@ -5,12 +5,12 @@
 <p align="left">
   <a href="https://github.com/SubhamPro11/airwaves/blob/main/LICENSE"><img src="https://img.shields.io/github/license/SubhamPro11/airwaves?style=for-the-badge&color=f59e0b&labelColor=0a0e14" alt="License" /></a>
   <a href="https://github.com/SubhamPro11/airwaves/stargazers"><img src="https://img.shields.io/github/stars/SubhamPro11/airwaves?style=for-the-badge&color=f59e0b&labelColor=0a0e14" alt="GitHub Stars" /></a>
-  <a href="https://playit.morbius.workers.dev"><img src="https://img.shields.io/badge/Cloudflare_Workers-live-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Live Deployment" /></a>
+  <a href="https://airwaves.dpdns.org"><img src="https://img.shields.io/badge/Live_Deployment-airwaves.dpdns.org-f59e0b?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Live Deployment" /></a>
   <a href="https://supabase.com"><img src="https://img.shields.io/badge/Supabase-Backend-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase Backend" /></a>
   <a href="https://react.dev"><img src="https://img.shields.io/badge/React_18-TypeScript-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React & TypeScript" /></a>
 </p>
 
-[**🌐 Live Site → airwaves.dpdns.org**](https://https://airwaves.dpdns.org/)
+[**🌐 Live Site → airwaves.dpdns.org**](https://airwaves.dpdns.org)
 
 ⭐ **Star this repo** to get new drops first — new categories, new stations, and upcoming redesigns get announced here ([Releases](https://github.com/SubhamPro11/airwaves/releases) / [Discussions](https://github.com/SubhamPro11/airwaves/discussions)) before they hit the live site.
 
