@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, LogOut, ExternalLink, Search, CheckCircle2, AlertTriangle, Inbox, Check, XCircle, Activity, RefreshCw, Heart, Users } from 'lucide-react';
+import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, LogOut, ExternalLink, Search, CheckCircle2, AlertTriangle, Inbox, Check, XCircle, Activity, RefreshCw, Heart, Users, AlertCircle } from 'lucide-react';
 import { Video, StationSubmission } from '../../types/video';
 import { CATEGORIES, Category } from '../../data/playlist';
 import { EditVideoModal } from './EditVideoModal';
@@ -79,6 +79,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     progress,
     checkSingleLink,
     checkAllLinks,
+    resolveBrokenReport,
   } = useLinkHealth();
   const [healthFilter, setHealthFilter] = useState<'all' | 'flagged' | 'live'>('all');
   const [singleTestingId, setSingleTestingId] = useState<string | null>(null);
@@ -90,12 +91,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const healthStats = useMemo(() => {
     let live = 0;
     let flagged = 0;
+    let visitorReported = 0;
     let unchecked = 0;
 
     videos.forEach((v) => {
       const h = healthMap[v.id];
       if (!h || h.status === 'unknown') {
         unchecked++;
+      } else if (h.error === 'Reported by visitor') {
+        visitorReported++;
+        flagged++;
       } else if (h.status === 'live' || h.status === 'redirect') {
         live++;
       } else if (h.status === 'broken' || h.status === 'timeout') {
@@ -103,7 +108,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       }
     });
 
-    return { live, flagged, unchecked, total: videos.length };
+    return { live, flagged, visitorReported, unchecked, total: videos.length };
   }, [videos, healthMap]);
 
   const showFeedback = (type: 'success' | 'error', text: string) => {
@@ -403,6 +408,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 >
                   <span className="w-2 h-2 rounded-full bg-red-400" />
                   <span>Needs Review ({healthStats.flagged})</span>
+                  {healthStats.visitorReported > 0 && (
+                    <span className="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold">
+                      {healthStats.visitorReported} visitor reported
+                    </span>
+                  )}
                 </button>
                 {healthStats.unchecked > 0 && (
                   <span className="text-slate-500 text-[11px] ml-auto">
@@ -528,10 +538,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                                     <span>Live</span>
                                   </span>
+                                ) : health?.error === 'Reported by visitor' ? (
+                                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono text-[11px]" title="Reported by visitor as not working">
+                                    <AlertCircle className="w-3 h-3 text-amber-400 shrink-0" />
+                                    <span>Visitor Report</span>
+                                  </span>
                                 ) : health?.status === 'redirect' ? (
                                   <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono text-[11px]">
                                     <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                                     <span>Redirect</span>
+                                  </span>
+                                ) : health?.error === 'Reported by visitor' ? (
+                                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono text-[11px]" title="Reported broken by visitor">
+                                    <AlertCircle className="w-3 h-3 text-amber-400" />
+                                    <span>Visitor Report</span>
                                   </span>
                                 ) : health?.status === 'broken' || health?.status === 'timeout' ? (
                                   <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-red-500/10 text-red-400 border border-red-500/20 font-mono text-[11px]" title={health.error || 'Check failed'}>
@@ -554,6 +574,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                 >
                                   <RefreshCw className={`w-3 h-3 ${isTestingThis ? 'animate-spin text-accent-400' : ''}`} />
                                 </button>
+
+                                {health?.error === 'Reported by visitor' && (
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      await resolveBrokenReport(video.id);
+                                      showFeedback('success', `Resolved visitor report for "${video.title}"`);
+                                    }}
+                                    title="Mark report as resolved"
+                                    className="p-1 rounded bg-surface-900 hover:bg-surface-750 text-emerald-400 hover:text-emerald-300 border border-surface-750 transition-colors cursor-pointer"
+                                  >
+                                    <Check className="w-3 h-3" />
+                                  </button>
+                                )}
                               </div>
                             </td>
 

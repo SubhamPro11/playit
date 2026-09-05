@@ -3,7 +3,6 @@ import { Heart, SearchX, RotateCcw, Plus } from 'lucide-react';
 import { CATEGORIES, Category } from './data/playlist';
 import { PlaylistHeader } from './components/PlaylistHeader';
 import { HeroSection } from './components/HeroSection';
-import { CategoryJumpBar } from './components/CategoryJumpBar';
 import { VideoCard } from './components/VideoCard';
 import { CategoryRow } from './components/CategoryRow';
 import { SiteFooter } from './components/SiteFooter';
@@ -18,6 +17,7 @@ import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AboutModal } from './components/AboutModal';
 import { NotFoundPage } from './components/NotFoundPage';
 import { SuggestStationModal } from './components/SuggestStationModal';
+import { ShortcutsModal } from './components/ShortcutsModal';
 import { StationPermalinkPage } from './components/StationPermalinkPage';
 import { SupportSection } from './components/SupportSection';
 import { StarCTA } from './components/StarCTA';
@@ -69,6 +69,7 @@ export function App() {
   const [shuffleMap, setShuffleMap] = useState<Record<string, number>>({});
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
 
   const { favoriteIds, favoritesCount, toggleFavorite, isFavorite } = useFavorites();
   const { isAuthenticated, loading: authLoading, error: authError, login, logout, isSupabaseConfigured } = useAdminAuth();
@@ -86,8 +87,11 @@ export function App() {
     Boolean(signedInUser)
   );
 
-  // Enable arrow-key card navigation & slash shortcut on public catalog
-  useKeyboardNav(routeState.route === 'public' && !isAboutOpen && !isSuggestOpen);
+  // Enable arrow-key card navigation, space activation, and keyboard shortcuts
+  useKeyboardNav({
+    isEnabled: routeState.route === 'public' && !isAboutOpen && !isSuggestOpen && !isShortcutsOpen,
+    onToggleShortcuts: () => setIsShortcutsOpen((prev) => !prev),
+  });
 
   const handleApproveSubmission = async (sub: StationSubmission) => {
     const fallbackThumb = CATEGORY_FALLBACK_THUMBNAILS[sub.category] || DEFAULT_FALLBACK_THUMBNAIL;
@@ -206,20 +210,6 @@ export function App() {
     setShuffleMap(newMap);
     setCurrentSort('shuffle');
   }, [videos]);
-
-  // Smooth jump to category row on page
-  const handleJumpToCategory = (cat: Category) => {
-    if (searchQuery.trim() || selectedCategory !== 'All' || favoritesOnly || currentSort !== 'default') {
-      setSelectedCategory(cat);
-      setSearchQuery('');
-    } else {
-      const slug = cat.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const elem = document.getElementById(slug);
-      if (elem) {
-        elem.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  };
 
   // Determine active view mode:
   // If user has an active search, specific category filter, favorites-only, or custom sort => Flat Grid View.
@@ -373,12 +363,14 @@ export function App() {
         favoritesOnly={favoritesOnly}
         onToggleFavoritesOnly={() => setFavoritesOnly((prev) => !prev)}
         selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
         currentSort={currentSort}
         onSelectSort={setCurrentSort}
         onShuffle={handleShuffle}
         onSurpriseMe={handleSurpriseMe}
         onOpenAbout={() => setIsAboutOpen(true)}
         onOpenSuggest={() => setIsSuggestOpen(true)}
+        onOpenShortcuts={() => setIsShortcutsOpen(true)}
       />
 
       {/* Hero Section with Search Bar, Category Chips, and Spotlight Pick */}
@@ -393,13 +385,6 @@ export function App() {
         onToggleFavorite={toggleFavorite}
         onSurpriseMe={handleSurpriseMe}
       />
-
-      {/* Sticky Category Jump Bar in Row Browsing Mode */}
-      {!isFilteredGridView && (
-        <CategoryJumpBar
-          onJumpToCategory={handleJumpToCategory}
-        />
-      )}
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -596,6 +581,7 @@ export function App() {
         totalVideos={videos.length}
         onOpenAbout={() => setIsAboutOpen(true)}
         onOpenSuggest={() => setIsSuggestOpen(true)}
+        onOpenShortcuts={() => setIsShortcutsOpen(true)}
       />
 
       {/* Floating Back to Top Button */}
@@ -612,6 +598,12 @@ export function App() {
         isOpen={isSuggestOpen}
         onClose={() => setIsSuggestOpen(false)}
         onSubmitStation={submitStation}
+      />
+
+      {/* Keyboard Shortcuts Guide Modal */}
+      <ShortcutsModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
       />
     </div>
   );

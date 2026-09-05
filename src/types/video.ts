@@ -40,6 +40,16 @@ export function getEffectiveThumbnailUrl(video: Partial<Video>): string {
   return DEFAULT_FALLBACK_THUMBNAIL;
 }
 
+export const NEW_STATION_THRESHOLD_DAYS = 14;
+
+export function isRecentStation(dateAdded?: string, thresholdDays = NEW_STATION_THRESHOLD_DAYS): boolean {
+  if (!dateAdded) return false;
+  const time = new Date(dateAdded).getTime();
+  if (isNaN(time)) return false;
+  const ageMs = Date.now() - time;
+  return ageMs >= 0 && ageMs <= thresholdDays * 24 * 60 * 60 * 1000;
+}
+
 export interface StationSubmission {
   id: string;
   name: string;

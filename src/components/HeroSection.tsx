@@ -119,13 +119,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                       key={cat}
                       type="button"
                       onClick={() => onSelectCategory?.(cat)}
-                      className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs whitespace-nowrap transition-all cursor-pointer border ${
                         isSelected
-                          ? 'bg-accent-500 text-surface-950 font-bold shadow-sm'
-                          : 'bg-surface-850 text-slate-300 hover:bg-surface-800 hover:text-white border border-surface-700 hover:border-surface-600'
+                          ? 'bg-accent-500/15 text-accent-400 border-accent-500/50 font-semibold shadow-xs'
+                          : 'bg-surface-850 hover:bg-surface-800 text-slate-300 hover:text-white border-surface-700 hover:border-surface-600 font-medium'
                       }`}
                     >
-                      {cat}
+                      {isSelected && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent-500 shrink-0" />
+                      )}
+                      <span>{cat}</span>
                     </button>
                   );
                 })}

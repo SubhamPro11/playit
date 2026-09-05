@@ -6,9 +6,15 @@ interface SiteFooterProps {
   totalVideos: number;
   onOpenAbout?: () => void;
   onOpenSuggest?: () => void;
+  onOpenShortcuts?: () => void;
 }
 
-export const SiteFooter: React.FC<SiteFooterProps> = ({ totalVideos, onOpenAbout, onOpenSuggest }) => {
+export const SiteFooter: React.FC<SiteFooterProps> = ({ 
+  totalVideos, 
+  onOpenAbout, 
+  onOpenSuggest, 
+  onOpenShortcuts 
+}) => {
   const realCategoriesCount = CATEGORIES.filter((c) => c !== 'All').length;
 
   return (
@@ -43,6 +49,15 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({ totalVideos, onOpenAbout
                 className="text-xs text-slate-300 hover:text-white font-medium underline underline-offset-4 cursor-pointer"
               >
                 Suggest a station &rarr;
+              </button>
+            )}
+            {onOpenShortcuts && (
+              <button
+                type="button"
+                onClick={onOpenShortcuts}
+                className="text-xs text-slate-400 hover:text-accent-400 font-mono underline underline-offset-4 cursor-pointer"
+              >
+                Shortcuts (?)
               </button>
             )}
           </div>

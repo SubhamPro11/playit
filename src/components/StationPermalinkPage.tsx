@@ -143,7 +143,18 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
     }
   };
 
+  const [confirmingReport, setConfirmingReport] = useState(false);
+
   const handleReportBroken = () => {
+    if (reported || isBrokenReported) return;
+
+    if (!confirmingReport) {
+      setConfirmingReport(true);
+      setTimeout(() => setConfirmingReport(false), 4000);
+      return;
+    }
+
+    setConfirmingReport(false);
     if (onReportBroken) {
       const ok = onReportBroken({ id: video.id, externalLink: video.externalLink });
       if (ok) {
@@ -352,11 +363,19 @@ export const StationPermalinkPage: React.FC<StationPermalinkPageProps> = ({
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded transition-colors ${
                       reported || isBrokenReported
                         ? 'text-amber-400 bg-amber-500/10 cursor-default'
+                        : confirmingReport
+                        ? 'text-surface-950 bg-amber-500 font-bold cursor-pointer'
                         : 'text-slate-400 hover:text-amber-400 hover:underline cursor-pointer'
                     }`}
                   >
                     <AlertCircle className="w-3 h-3" />
-                    <span>{reported || isBrokenReported ? 'Broken stream reported' : 'Report broken stream'}</span>
+                    <span>
+                      {reported || isBrokenReported
+                        ? 'Broken stream reported'
+                        : confirmingReport
+                        ? 'Confirm report?'
+                        : 'Report broken stream'}
+                    </span>
                   </button>
                 )}
               </div>

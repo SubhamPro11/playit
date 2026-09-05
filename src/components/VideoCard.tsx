@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, ArrowUpRight, Info, Share2, Check, AlertCircle } from 'lucide-react';
-import { Video, getEffectiveThumbnailUrl, DEFAULT_FALLBACK_THUMBNAIL } from '../types/video';
+import { Video, getEffectiveThumbnailUrl, DEFAULT_FALLBACK_THUMBNAIL, isRecentStation } from '../types/video';
 import { getStationSlug } from '../utils/slug';
 import { useToast } from './Toast';
 
@@ -96,9 +96,20 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     }
   };
 
+  const [confirmingReport, setConfirmingReport] = useState(false);
+
   const handleReportClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (reported || isBrokenReported) return;
+
+    if (!confirmingReport) {
+      setConfirmingReport(true);
+      setTimeout(() => setConfirmingReport(false), 4000);
+      return;
+    }
+
+    setConfirmingReport(false);
     if (onReportBroken) {
       const ok = onReportBroken({ id: video.id, externalLink: video.externalLink });
       if (ok) {
@@ -191,6 +202,17 @@ export const VideoCard: React.FC<VideoCardProps> = ({
             }`}
           />
         </button>
+
+        {/* "New" Badge for Recently Added Stations */}
+        {isRecentStation(video.dateAdded) && (
+          <div
+            title={`Added recently (${new Date(video.dateAdded!).toLocaleDateString()})`}
+            className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-surface-950/90 border border-accent-500/40 backdrop-blur-md text-[10px] font-mono font-bold text-accent-400 shadow-sm z-10 select-none pointer-events-none"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-accent-500" />
+            <span>NEW</span>
+          </div>
+        )}
       </div>
 
       {/* Card Info & Scannable Typography */}
@@ -245,16 +267,24 @@ export const VideoCard: React.FC<VideoCardProps> = ({
                 type="button"
                 onClick={handleReportClick}
                 disabled={reported || isBrokenReported}
-                title={reported || isBrokenReported ? "Report received — thank you!" : "Report dead or broken link"}
+                title={
+                  reported || isBrokenReported
+                    ? "Report received — thank you!"
+                    : confirmingReport
+                    ? "Click again to confirm broken report"
+                    : "Report dead or broken link"
+                }
                 aria-label={reported || isBrokenReported ? "Broken link reported" : `Report broken link for ${video.title}`}
                 className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] border transition-all ${
                   reported || isBrokenReported
                     ? 'bg-amber-500/15 text-amber-300 border-amber-500/30 cursor-default'
+                    : confirmingReport
+                    ? 'bg-amber-500 text-surface-950 border-amber-500 font-bold cursor-pointer'
                     : 'bg-surface-900 hover:bg-surface-750 text-slate-400 hover:text-amber-400 border-surface-700 cursor-pointer'
                 }`}
               >
                 <AlertCircle className="w-2.5 h-2.5" />
-                <span>{reported || isBrokenReported ? 'Reported' : 'Report'}</span>
+                <span>{reported || isBrokenReported ? 'Reported' : confirmingReport ? 'Confirm?' : 'Report'}</span>
               </button>
             )}
           </div>

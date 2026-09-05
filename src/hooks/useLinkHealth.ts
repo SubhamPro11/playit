@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Video, LinkHealthReport, HealthStatusType } from '../types/video';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 const STORAGE_KEY = 'airwaves_link_health';
 const LEGACY_STORAGE_KEY = 'playit_link_health';
@@ -27,6 +28,51 @@ export function useLinkHealth() {
 
   const [isCheckingAll, setIsCheckingAll] = useState(false);
   const [progress, setProgress] = useState<{ current: number; total: number }>({ current: 0, total: 0 });
+
+  // Fetch active broken reports from Supabase and merge with healthMap
+  useEffect(() => {
+    const client = supabase;
+    if (!isSupabaseConfigured || !client) return;
+
+    const fetchReports = async () => {
+      try {
+        const { data, error } = await client
+          .from('broken_link_reports')
+          .select('video_id, url, created_at, resolved')
+          .eq('resolved', false);
+
+        if (error) {
+          console.warn('Failed to fetch broken link reports from Supabase:', error.message);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          setHealthMap((prev) => {
+            const next = { ...prev };
+            data.forEach((row) => {
+              next[row.video_id] = {
+                videoId: row.video_id,
+                url: row.url,
+                status: 'broken',
+                lastChecked: row.created_at,
+                error: 'Reported by visitor',
+              };
+            });
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+            } catch {
+              // ignore
+            }
+            return next;
+          });
+        }
+      } catch (err) {
+        console.warn('Error fetching broken reports:', err);
+      }
+    };
+
+    fetchReports();
+  }, []);
 
   // Save to localStorage when healthMap changes
   const saveHealthMap = useCallback((newMap: Record<string, LinkHealthReport>) => {
@@ -71,8 +117,51 @@ export function useLinkHealth() {
       return next;
     });
 
+    // Write to Supabase so the admin sees the report remotely
+    const client = supabase;
+    if (isSupabaseConfigured && client) {
+      (async () => {
+        try {
+          const { error } = await client.from('broken_link_reports').insert({
+            video_id: video.id,
+            url: video.externalLink,
+          });
+          if (error) {
+            console.warn('Failed to insert broken report to Supabase:', error.message);
+          }
+        } catch (err) {
+          console.warn('Error writing broken report to Supabase:', err);
+        }
+      })();
+    }
+
     return true;
   }, [reportedIds]);
+
+  const resolveBrokenReport = useCallback(async (videoId: string) => {
+    setHealthMap((prev) => {
+      const next = { ...prev };
+      delete next[videoId];
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+
+    const client = supabase;
+    if (isSupabaseConfigured && client) {
+      try {
+        await client
+          .from('broken_link_reports')
+          .update({ resolved: true })
+          .eq('video_id', videoId);
+      } catch (err) {
+        console.warn('Failed to resolve broken report in Supabase:', err);
+      }
+    }
+  }, []);
 
   // Check a single station link
   const checkSingleLink = useCallback(async (video: Video): Promise<LinkHealthReport> => {
@@ -201,5 +290,6 @@ export function useLinkHealth() {
     clearHealthData,
     reportBrokenLink,
     hasReportedBroken,
+    resolveBrokenReport,
   };
 }
