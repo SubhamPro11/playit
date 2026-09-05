@@ -3,8 +3,8 @@
 > A curated directory of independent web radio, audio playlists & soundscape projects. Human-picked. No algorithms. Zero ads.
 
 <p align="left">
-  <a href="https://github.com/SubhamPro11/airwaves/blob/main/LICENSE"><img src="https://img.shields.io/github/license/SubhamPro11/airwaves?style=for-the-badge&color=39FF14&labelColor=0a0e14" alt="License" /></a>
-  <a href="https://github.com/SubhamPro11/airwaves/stargazers"><img src="https://img.shields.io/github/stars/SubhamPro11/airwaves?style=for-the-badge&color=39FF14&labelColor=0a0e14" alt="GitHub Stars" /></a>
+  <a href="https://github.com/SubhamPro11/airwaves/blob/main/LICENSE"><img src="https://img.shields.io/github/license/SubhamPro11/airwaves?style=for-the-badge&color=f59e0b&labelColor=0a0e14" alt="License" /></a>
+  <a href="https://github.com/SubhamPro11/airwaves/stargazers"><img src="https://img.shields.io/github/stars/SubhamPro11/airwaves?style=for-the-badge&color=f59e0b&labelColor=0a0e14" alt="GitHub Stars" /></a>
   <a href="https://playit.morbius.workers.dev"><img src="https://img.shields.io/badge/Cloudflare_Workers-live-F38020?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Live Deployment" /></a>
   <a href="https://supabase.com"><img src="https://img.shields.io/badge/Supabase-Backend-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase Backend" /></a>
   <a href="https://react.dev"><img src="https://img.shields.io/badge/React_18-TypeScript-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React & TypeScript" /></a>
@@ -16,18 +16,51 @@
 
 ---
 
+## 📸 Preview
+
+### Desktop Experience
+![Airwaves Desktop Homepage](docs/screenshots/homepage-hero.png)
+
+<br />
+
+<p align="center">
+  <img src="docs/screenshots/homepage-grid.png" alt="Curated Station Grid with Badges" width="49%" />
+  <img src="docs/screenshots/keyboard-shortcuts.png" alt="Keyboard Shortcuts Guide" width="49%" />
+</p>
+
+### Mobile Experience
+<p align="center">
+  <img src="docs/screenshots/homepage-mobile.png" alt="Airwaves Mobile View" width="360" />
+</p>
+
+---
+
 ## ✨ What It Is
 
-**Airwaves** (formerly *PlayIt*) is a curated single-playlist showcase of **70+ independent web radio, audio playlists, and ambient soundscape projects**, organized into 7 distinct categories. Every single entry is hand-picked — nothing here is auto-scraped, sponsored, or ranked by an algorithm.
+**Airwaves** is an open, hand-curated directory of **85+ independent web radio stations, long-distance highway bus mixtapes, ambient soundscape projects, retro TV audio archives, and regional folk music**. Every single entry is hand-picked — nothing is auto-scraped, sponsored, or ranked by engagement algorithms.
 
-- 🎧 **70+ Curated Stations** across 7 distinct categories (Lofi & Chill, Ambient & Nature, Electronic & Synth, Jazz & Classical, Indie & Alternative, World & Experimental, Focus & Study)
-- 🌑 **Sleek Dark Theme** with amber/orange neon accents — crafted to be easy on the eyes for extended deep-focus and listening sessions
-- 🚫 **Zero Ads & Trackers** — no surveillance capitalism, no algorithmic feedback loops
-- 🔗 **Permalinks to Every Entry** with dynamic OpenGraph meta previews and rich station details
-- 🔀 **Shuffle, Search & Favorites** — easily search by genre, keyword, or randomize your next session
-- 🩺 **Dead-Link Monitoring** — built-in health checks so listed stations remain reachable and playable
-- 🙏 **Creator Credit on Every Entry** — direct attribution and links to original authors and broadcasters
-- 🛠️ **Full Admin Dashboard** — for managing stations, reviewing community submissions, viewing subscriber lists, and editing site config
+- 📻 **85+ Curated Stations** across 7 distinct categories:
+  - *Radio & mixtapes*
+  - *Travel & transit*
+  - *Folk & regional*
+  - *Classical & instrumental*
+  - *Nostalgia & retro*
+  - *Devotional & spiritual*
+  - *Ambient & mood*
+- 🏷️ **Category Filter Chips** — filter by any category in the sticky header or hero bar with touch-scroll support on mobile, combining smoothly with sorting and favorites.
+- 🌟 **Automated "NEW" Badges** — subtle amber badges with the brand dot automatically highlight stations added within the last 14 days based on real database records.
+- 🚩 **Report Broken Link System** — low-friction two-step reporting (`Report` → `Confirm?`) with session deduplication, anonymous Supabase sync, and zero auto-delisting.
+- ⌨️ **Keyboard Shortcuts & Typing Guards**:
+  - `Space` — Launch / open focused station
+  - `→` / `←` — Previous / next station navigation with auto-scrolling
+  - `/` — Focus global search bar
+  - `?` — Toggle keyboard shortcuts guide
+  - `Esc` — Blur search or dismiss modals
+  - *Airtight guards guarantee typing in search, suggestions, or admin fields is never hijacked.*
+- 🌑 **Sleek Dark Theme** — tailored with amber/orange accents (`#f59e0b`), dark glassmorphic surfaces, and zero visual clutter.
+- 🚫 **Zero Ads & Zero Tracking** — no cookies, no analytics tracking, no algorithmic manipulation.
+- 🔗 **Permalinks to Every Entry** with dynamic OpenGraph previews and direct creator attribution.
+- 🛠️ **Full Admin Dashboard** — for reviewing submissions, managing the catalog, and monitoring link health with visitor report triage.
 
 ---
 
@@ -35,11 +68,11 @@
 
 - **Frontend Framework**: [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
 - **Bundler & Dev Server**: [Vite](https://vitejs.dev/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + PostCSS + Custom CSS Utilities
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + PostCSS + Custom Design Tokens
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **Database & Storage Layer**: [Supabase](https://supabase.com/) (PostgreSQL with Row Level Security) with client-side fallback storage
-- **Authentication**: Supabase Auth (Email / Password authentication with role-based access control)
-- **Deployment & Hosting**: [Cloudflare Workers](https://workers.cloudflare.com/) / Pages with static HTML pre-rendering
+- **Database & Storage Layer**: [Supabase](https://supabase.com/) (PostgreSQL with Row Level Security)
+- **Authentication**: Supabase Auth (Email / Password RBAC)
+- **Deployment & Hosting**: [Cloudflare Workers](https://workers.cloudflare.com/) / Pages with prerendered static HTML & sitemaps
 
 ---
 
@@ -47,7 +80,7 @@
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (version 18.x or higher recommended)
+- [Node.js](https://nodejs.org/) (v18.x or higher recommended)
 - [npm](https://www.npmjs.com/) or [pnpm](https://pnpm.io/)
 
 ### Installation & Local Setup
@@ -81,7 +114,7 @@
    ```bash
    npm run dev
    ```
-   Open [http://localhost:5173](http://localhost:5173) in your browser.
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 5. **Build for production:**
    ```bash
@@ -94,9 +127,9 @@
 
 | Variable | Description | Required |
 | :--- | :--- | :--- |
-| `VITE_SUPABASE_URL` | The REST / API URL for your Supabase project instance | Yes (for live DB sync) |
-| `VITE_SUPABASE_ANON_KEY` | The public anonymous API key for client-side queries | Yes (for live DB sync) |
-| `VITE_SITE_URL` | Canonical public URL used for SEO and OpenGraph permalinks | Optional |
+| `VITE_SUPABASE_URL` | REST / API URL for Supabase instance | Yes (for live DB sync) |
+| `VITE_SUPABASE_ANON_KEY` | Anonymous public API key for client queries | Yes (for live DB sync) |
+| `VITE_SITE_URL` | Canonical public URL for SEO and OpenGraph permalinks | Optional |
 
 > **Note:** If Supabase environment variables are omitted, Airwaves automatically falls back to static seed data with local `localStorage` persistence.
 
@@ -106,24 +139,11 @@
 
 Contributions are welcome — especially new station submissions!
 
-- **Adding a station:** Submit via the on-site **"Suggest a Station"** modal, open a Pull Request, or open an Issue with the station details.
-- **Bug fixes & Features:** Please open an Issue first for anything non-trivial so we can align on design and approach before writing code.
-- **Design consistency:** Keep all UI aligned with the dark theme, amber/orange neon accents, and distraction-free philosophy.
+- **Adding a station:** Submit via the on-site **"Suggest a Station"** modal (`+ Suggest`), open a Pull Request, or file an Issue.
+- **Bug fixes & Features:** Please open an Issue first so we can align on design and approach before writing code.
+- **Design consistency:** Keep all UI aligned with the dark theme, amber/orange accents (`#f59e0b`), and distraction-free philosophy.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for further guidelines and station submission formatting.
-
----
-
-## 🗺️ Roadmap
-
-- [x] Responsive player interface & category navigation
-- [x] Station permalinks with custom SEO and OG previews
-- [x] Community station suggestion modal & admin review pipeline
-- [ ] Visual redesign & advanced audio visualizer modes (in progress)
-- [ ] More curated niches and micro-genre categories
-- [ ] Expanded admin telemetry and automated link status cron checks
-
-Track progress, release notes, and upcoming feature polls in [Releases](https://github.com/SubhamPro11/airwaves/releases) and [Discussions](https://github.com/SubhamPro11/airwaves/discussions).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for further guidelines and submission formatting.
 
 ---
 
