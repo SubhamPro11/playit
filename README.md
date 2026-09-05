@@ -10,7 +10,7 @@
   <a href="https://react.dev"><img src="https://img.shields.io/badge/React_18-TypeScript-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React & TypeScript" /></a>
 </p>
 
-[**🌐 Live Site → playit.morbius.workers.dev**](https://playit.morbius.workers.dev)
+[**🌐 Live Site → airwaves.dpdns.org**](https://https://airwaves.dpdns.org/)
 
 ⭐ **Star this repo** to get new drops first — new categories, new stations, and upcoming redesigns get announced here ([Releases](https://github.com/SubhamPro11/airwaves/releases) / [Discussions](https://github.com/SubhamPro11/airwaves/discussions)) before they hit the live site.
 
